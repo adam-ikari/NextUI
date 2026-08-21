@@ -103,6 +103,7 @@ typedef struct
 {
 	// Theme
 	char fontFile[256];
+	char language[16]; // "en" or "zh"
 	int fontStyle; // 0x00 = TTF_STYLE_NORMAL, 0x01 = TTF_STYLE_BOLD, etc.
 	uint32_t color1_255; // not screen mapped
 	uint32_t color2_255; // not screen mapped
@@ -287,6 +288,8 @@ void CFG_get(const char *key, char * value);
 const char* CFG_getFontFile(void);
 void CFG_setFontFile(const char* filename);
 // The font style to use for the UI font.
+const char* CFG_getLanguage(void);
+void CFG_setLanguage(const char* lang);
 int CFG_getFontStyle(void);
 void CFG_setFontStyle(int style);
 // The colors to use for the UI. These are packed 0xRRGGBBAA values.

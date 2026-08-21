@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <libgen.h>
+#include "lang.h"
 
 int Menu_messageWithFont(char* message, char** pairs, TTF_Font* f) {
 	GFX_setMode(MODE_MAIN);

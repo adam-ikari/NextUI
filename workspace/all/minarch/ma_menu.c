@@ -22,6 +22,7 @@
 #include "ma_video.h"
 #include "ma_frontend_opts.h"
 #include "ma_menu.h"
+#include "lang.h"
 
 ///////////////////////////////
 
@@ -167,6 +168,13 @@ static struct {
 };
 
 void Menu_init(void) {
+	// 翻译菜单项
+	menu.items[ITEM_CONT] = LANG(CONTINUE);
+	menu.items[ITEM_SAVE] = LANG(SAVE);
+	menu.items[ITEM_LOAD] = LANG(LOAD);
+	menu.items[ITEM_OPTS] = LANG(OPTIONS);
+	menu.items[ITEM_QUIT] = LANG(QUIT);
+
 	menu.overlay = SDL_CreateRGBSurfaceWithFormat(SDL_SWSURFACE,
 		DEVICE_WIDTH,DEVICE_HEIGHT,
 		screen->format->BitsPerPixel,screen->format->format);
@@ -424,7 +432,7 @@ static int OptionAchievements_showDetail(MenuList* list, int i) {
 				SDL_FreeSurface(time_text);
 			} else if (ach->measured_progress[0]) {
 				char progress_buf[64];
-				snprintf(progress_buf, sizeof(progress_buf), "Progress: %s", ach->measured_progress);
+				snprintf(progress_buf, sizeof(progress_buf), LANG(PROGRESS_COLON), ach->measured_progress);
 				SDL_Surface* progress_text = TTF_RenderUTF8_Blended(font.tiny, progress_buf, COLOR_LIGHT_TEXT);
 				SDL_BlitSurface(progress_text, NULL, screen, &(SDL_Rect){
 					center_x - progress_text->w / 2, content_y
@@ -435,7 +443,7 @@ static int OptionAchievements_showDetail(MenuList* list, int i) {
 			
 			// Offline pending indicator
 			if (is_offline_pending) {
-				SDL_Surface* offline_text = TTF_RenderUTF8_Blended(font.tiny, "Unlocked offline - pending sync", COLOR_LIGHT_TEXT);
+				SDL_Surface* offline_text = TTF_RenderUTF8_Blended(font.tiny, LANG(UNLOCKED_OFFLINE_PENDING_SYNC), COLOR_LIGHT_TEXT);
 				int wifi_size = SCALE1(12);
 				int total_w = wifi_size + SCALE1(4) + offline_text->w;
 				int icon_x = center_x - total_w / 2;
@@ -488,7 +496,7 @@ static int OptionAchievements_showDetail(MenuList* list, int i) {
 			
 			// Muted status below other info with gap before title
 			if (is_muted) {
-				SDL_Surface* mute_text = TTF_RenderUTF8_Blended(font.tiny, "Muted - progress notifications silenced", COLOR_LIGHT_TEXT);
+				SDL_Surface* mute_text = TTF_RenderUTF8_Blended(font.tiny, LANG(MUTED_PROGRESS_SILENCED), COLOR_LIGHT_TEXT);
 				int mute_icon_w = SCALE1(10);
 				int mute_icon_h = SCALE1(12);
 				int total_w = mute_icon_w + SCALE1(4) + mute_text->w;
@@ -505,7 +513,7 @@ static int OptionAchievements_showDetail(MenuList* list, int i) {
 			}
 			
 			// Button hints - update based on current mute state
-			char* hints[] = {"X", is_muted ? "UNMUTE" : "MUTE", "B", "BACK", NULL};
+			char* hints[] = {"X", is_muted ? LANG(UNMUTE) : LANG(MUTE), "B", LANG(BACK), NULL};
 			GFX_blitButtonGroup(hints, 0, screen, 1);
 			GFX_flip(screen);
 			dirty = 0;
@@ -521,7 +529,7 @@ static int OptionAchievements_showDetail(MenuList* list, int i) {
 
 static int OptionAchievements_openMenu(MenuList* list, int i) {
 	if (!RA_isGameLoaded()) {
-		Menu_message("No achievements found for this game.\n\nThis ROM may need a compatibility patch\nor may not be a supported version.\n\nVisit retroachievements.org to check\nsupported game files.", (char*[]){"B","BACK", NULL});
+		Menu_message("No achievements found for this game.\n\nThis ROM may need a compatibility patch\nor may not be a supported version.\n\nVisit retroachievements.org to check\nsupported game files.", (char*[]){"B",LANG(BACK), NULL});
 		return MENU_CALLBACK_NOP;
 	}
 
@@ -529,7 +537,7 @@ static int OptionAchievements_openMenu(MenuList* list, int i) {
 	RA_getAchievementSummary(&unlocked, &total);
 
 	if (total == 0) {
-		Menu_message("No achievements available for this game.\n\nThis game may not have achievements yet.\n\nVisit retroachievements.org for details.", (char*[]){"B","BACK", NULL});
+		Menu_message("No achievements available for this game.\n\nThis game may not have achievements yet.\n\nVisit retroachievements.org for details.", (char*[]){"B",LANG(BACK), NULL});
 		return MENU_CALLBACK_NOP;
 	}
 
@@ -549,7 +557,7 @@ static int OptionAchievements_openMenu(MenuList* list, int i) {
 		RC_CLIENT_ACHIEVEMENT_CATEGORY_CORE, RC_CLIENT_ACHIEVEMENT_LIST_GROUPING_LOCK_STATE);
 
 	if (!ach_menu_list) {
-		Menu_message("Failed to load achievements", (char*[]){"B","BACK", NULL});
+		Menu_message(LANG(FAILED_TO_LOAD_ACHIEVEMENTS), (char*[]){"B",LANG(BACK), NULL});
 		return MENU_CALLBACK_NOP;
 	}
 
@@ -564,7 +572,7 @@ static int OptionAchievements_openMenu(MenuList* list, int i) {
 		ach_menu_list = NULL;
 		// This can happen with unsupported game versions where pseudo-achievements
 		// are counted in the summary but not available in the achievement list
-		Menu_message("Achievement list not available", (char*[]){"B","BACK", NULL});
+		Menu_message(LANG(ACHIEVEMENT_LIST_NOT_AVAILABLE), (char*[]){"B",LANG(BACK), NULL});
 		return MENU_CALLBACK_NOP;
 	}
 
@@ -593,9 +601,9 @@ static int OptionAchievements_openMenu(MenuList* list, int i) {
 	const rc_client_achievement_t** filtered = calloc(total_achievements, sizeof(rc_client_achievement_t*));
 	int filtered_count = 0;
 	
-	// Hide "Unknown Emulator" warning (ID 101000001) when hardcore mode is disabled.
+	// Hide LANG(UNKNOWN_EMULATOR) warning (ID 101000001) when hardcore mode is disabled.
 	// Show it when enabled so users understand why they only get softcore unlocks.
-	// Note: We intentionally show "Unsupported Game Version" so users know to find a supported ROM.
+	// Note: We intentionally show LANG(UNSUPPORTED_GAME_VERSION) so users know to find a supported ROM.
 	bool hide_unknown_emulator = !CFG_getRAHardcoreMode();
 
 	while (show_menu) {
@@ -606,7 +614,7 @@ static int OptionAchievements_openMenu(MenuList* list, int i) {
 		if (filter_dirty) {
 			filtered_count = 0;
 			for (int j = 0; j < total_achievements; j++) {
-				// Skip "Unknown Emulator" warning when hardcore mode is disabled
+				// Skip LANG(UNKNOWN_EMULATOR) warning when hardcore mode is disabled
 				if (hide_unknown_emulator && all_achievements[j]->id == 101000001) {
 					continue;
 				}
@@ -628,7 +636,7 @@ static int OptionAchievements_openMenu(MenuList* list, int i) {
 				ach_menu_list = NULL;
 				ach_menu_achievements = NULL;
 				ach_menu_count = 0;
-				Menu_message("No achievements found", (char*[]){"B","BACK", NULL});
+				Menu_message(LANG(NO_ACHIEVEMENTS_FOUND), (char*[]){"B",LANG(BACK), NULL});
 				return MENU_CALLBACK_NOP;
 			}
 
@@ -880,7 +888,7 @@ static int OptionAchievements_openMenu(MenuList* list, int i) {
 
 			// Button hints at bottom with dynamic Y and X button text
 			int selected_muted = (filtered_count > 0) ? RA_isAchievementMuted(filtered[selected]->id) : 0;
-			char* hints[] = {"Y", ach_filter_locked_only ? "SHOW ALL" : "SHOW LOCKED", "X", selected_muted ? "UNMUTE" : "MUTE", NULL};
+			char* hints[] = {"Y", ach_filter_locked_only ? LANG(SHOW_ALL) : LANG(SHOW_LOCKED), "X", selected_muted ? LANG(UNMUTE) : LANG(MUTE), NULL};
 			GFX_blitButtonGroup(hints, 0, screen, 1);
 
 			GFX_flip(screen);
@@ -1642,7 +1650,7 @@ void Menu_screenshot(void) {
 	
 	// Show notification if enabled
 	if (CFG_getNotifyScreenshot()) {
-		Notification_push(NOTIFICATION_SETTING, "Screenshot saved", NULL);
+		Notification_push(NOTIFICATION_SETTING, LANG(SCREENSHOT_SAVED), NULL);
 	}
 }
 void Menu_saveState(void) {
@@ -1680,7 +1688,7 @@ void Menu_saveState(void) {
 	if (CFG_getNotifyManualSave()) {
 		char msg[NOTIFICATION_MAX_MESSAGE];
 		// User-facing slots are 1-8 (internal 0-7)
-		snprintf(msg, sizeof(msg), success ? "State Saved - Slot %d" : "Save Failed - Slot %d", menu.slot + 1);
+		snprintf(msg, sizeof(msg), success ? LANG(STATE_SAVED_SLOT) : LANG(SAVE_FAILED_SLOT), menu.slot + 1);
 		Notification_push(NOTIFICATION_SAVE_STATE, msg, NULL);
 	}
 }
@@ -1711,7 +1719,7 @@ void Menu_loadState(void) {
 		if (CFG_getNotifyLoad()) {
 			char msg[NOTIFICATION_MAX_MESSAGE];
 			// User-facing slots are 1-8 (internal 0-7)
-			snprintf(msg, sizeof(msg), success ? "State Loaded - Slot %d" : "Load Failed - Slot %d", menu.slot + 1);
+			snprintf(msg, sizeof(msg), success ? LANG(STATE_LOADED_SLOT) : LANG(LOAD_FAILED_SLOT), menu.slot + 1);
 			Notification_push(NOTIFICATION_LOAD_STATE, msg, NULL);
 		}
 	}
@@ -1771,7 +1779,7 @@ void Menu_loop(void) {
 	char disc_name[16];
 	if (menu.total_discs) {
 		rom_disc = menu.disc;
-		sprintf(disc_name, "Disc %i", menu.disc+1);
+		sprintf(disc_name, LANG(DISC_I), menu.disc+1);
 	}
 		
 	int selected = 0; // resets every launch
@@ -1808,7 +1816,7 @@ void Menu_loop(void) {
 				menu.disc -= 1;
 				if (menu.disc<0) menu.disc += menu.total_discs;
 				dirty = 1;
-				sprintf(disc_name, "Disc %i", menu.disc+1);
+				sprintf(disc_name, LANG(DISC_I), menu.disc+1);
 			}
 			else if (selected==ITEM_SAVE || selected==ITEM_LOAD) {
 				menu.slot -= 1;
@@ -1821,7 +1829,7 @@ void Menu_loop(void) {
 				menu.disc += 1;
 				if (menu.disc==menu.total_discs) menu.disc -= menu.total_discs;
 				dirty = 1;
-				sprintf(disc_name, "Disc %i", menu.disc+1);
+				sprintf(disc_name, LANG(DISC_I), menu.disc+1);
 			}
 			else if (selected==ITEM_SAVE || selected==ITEM_LOAD) {
 				menu.slot += 1;
@@ -1932,8 +1940,8 @@ void Menu_loop(void) {
 			SDL_FreeSurface(text);
 			
 			if (show_setting && !GetHDMI()) GFX_blitHardwareHints(screen, show_setting);
-			else GFX_blitButtonGroup((char*[]){ BTN_SLEEP==BTN_POWER?"POWER":"MENU","SLEEP", NULL }, 0, screen, 0);
-			GFX_blitButtonGroup((char*[]){ "B","BACK", "A","OKAY", NULL }, 1, screen, 1);
+			else GFX_blitButtonGroup((char*[]){ BTN_SLEEP==BTN_POWER?LANG(POWER):LANG(MENU_BTN),LANG(SLEEP_BTN), NULL }, 0, screen, 0);
+			GFX_blitButtonGroup((char*[]){ "B",LANG(BACK), "A",LANG(OKAY), NULL }, 1, screen, 1);
 			
 			// list
 			oy = (((DEVICE_HEIGHT / FIXED_SCALE) - PADDING * 2) - (MENU_ITEM_COUNT * PILL_SIZE)) / 2;
@@ -2017,8 +2025,8 @@ void Menu_loop(void) {
 				else {
 					SDL_Rect preview_rect = {ox,oy,hw,hh};
 					SDL_FillRect(screen, &preview_rect, SDL_MapRGBA(screen->format,0,0,0,255));
-					if (menu.save_exists) GFX_blitMessage(font.large, "No Preview", screen, &preview_rect);
-					else GFX_blitMessage(font.large, "Empty Slot", screen, &preview_rect);
+					if (menu.save_exists) GFX_blitMessage(font.large, LANG(NO_PREVIEW), screen, &preview_rect);
+					else GFX_blitMessage(font.large, LANG(EMPTY_SLOT), screen, &preview_rect);
 				}
 				
 				// pagination

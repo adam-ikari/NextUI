@@ -14,6 +14,7 @@
 #endif
 
 #include "ma_saves.h"
+#include "lang.h"
 
 ///////////////////////////////////////
 
@@ -201,7 +202,7 @@ int State_read(void) { // from picoarch
 	// Block load states in RetroAchievements hardcore mode
 	if (RA_isHardcoreModeActive()) {
 		LOG_info("State load blocked - hardcore mode active\n");
-		Notification_push(NOTIFICATION_ACHIEVEMENT, "Load states disabled in Hardcore mode", NULL);
+		Notification_push(NOTIFICATION_ACHIEVEMENT, LANG(LOAD_STATES_DISABLED_HARDCORE), NULL);
 		return 0;
 	}
 
@@ -305,7 +306,7 @@ int State_write(void) { // from picoarch
 	// Block save states in RetroAchievements hardcore mode
 	if (RA_isHardcoreModeActive()) {
 		LOG_info("State save blocked - hardcore mode active\n");
-		Notification_push(NOTIFICATION_ACHIEVEMENT, "Save states disabled in Hardcore mode", NULL);
+		Notification_push(NOTIFICATION_ACHIEVEMENT, LANG(SAVE_STATES_DISABLED_HARDCORE), NULL);
 		return 0;
 	}
 

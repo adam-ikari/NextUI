@@ -7,6 +7,7 @@
 #include <unistd.h>
 #include "defines.h"
 #include "utils.h"
+#include "lang.h"
 
 NextUISettings settings = {0};
 
@@ -143,6 +144,7 @@ void CFG_init(FontLoad_callback_t cb, ColorSet_callback_t ccb)
 {
     CFG_defaults(&settings);
     settings.onFontChange = cb;
+    strcpy(settings.language, "en");
     settings.onColorSet = ccb;
     bool fontLoaded = false;
 
@@ -173,6 +175,12 @@ void CFG_init(FontLoad_callback_t cb, ColorSet_callback_t ccb)
                     CFG_setFontFile(value);
                 fontLoaded = true;
                 continue;
+            }
+            if (strncmp(line, "lang=", 5) == 0)
+            {
+                char *val = line + 5;
+                val[strcspn(val, "\r\n")] = 0;
+                CFG_setLanguage(val);
             }
             if (strncmp(line, "palette=", 8) == 0)
             {
@@ -1279,6 +1287,20 @@ void CFG_setRAAchievementSortOrder(int sortOrder)
     CFG_sync();
 }
 
+const char* CFG_getLanguage(void)
+{
+    return settings.language;
+}
+
+void CFG_setLanguage(const char* lang)
+{
+    if (strcmp(lang, "zh") == 0)
+        strcpy(settings.language, "zh");
+    else
+        strcpy(settings.language, "en");
+    LANG_set(strcmp(settings.language, "zh") == 0 ? LANG_ID_ZH : LANG_ID_EN);
+}
+
 int CFG_getFontStyle(void)
 {
     return settings.fontStyle;
@@ -1316,7 +1338,11 @@ void CFG_setInputPromptStyle(int style)
 
 void CFG_get(const char *key, char *value)
 {
-    if (strcmp(key, "font") == 0)
+    if (strcmp(key, "lang") == 0)
+    {
+        sprintf(value, "%s", CFG_getLanguage());
+    }
+    else if (strcmp(key, "font") == 0)
     {
         // backward compat: always return integer (default 1 for custom fonts)
         const char *f = CFG_getFontFile();
@@ -1604,6 +1630,7 @@ void CFG_sync(void)
         fprintf(file, "font=0\n");
     else
         fprintf(file, "font=%s\n", settings.fontFile);
+    fprintf(file, "lang=%s\n", settings.language);
     fprintf(file, "palette=%s\n", settings.paletteName);
     fprintf(file, "color1=0x%08X\n", settings.color1_255);
     fprintf(file, "color2=0x%08X\n", settings.color2_255);

@@ -4,6 +4,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include "lang.h"
 
 int Option_getValueIndex(Option* item, const char* value) {
 	if (!value || !item || !item->values) return 0;

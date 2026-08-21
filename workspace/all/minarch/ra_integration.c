@@ -2,6 +2,7 @@
 #include "ra_log.h"
 
 #include "ra_integration.h"
+#include "lang.h"
 #include "ra_consoles.h"
 #include "chd_reader.h"
 #include "config.h"
@@ -150,7 +151,7 @@ static RAPendingLoad ra_pending_load = {0};
 typedef struct {
 	int count;
 	uint32_t next_time;           // SDL_GetTicks() timestamp for next retry
-	bool notified_connecting;     // Track if we showed "Connecting..." notification
+	bool notified_connecting;     // Track if we showed LANG(CONNECTING_DOTDOTDOT) notification
 } RALoginRetry;
 
 static RALoginRetry ra_login_retry = {0};
@@ -180,9 +181,9 @@ static uint32_t ra_sync_game_id = 0;
 // communicate exclusively through the event queue (ra_event_queue.h).
 // These flags are read and written only on the main thread — no mutex needed.
 // Note: game_load_retry is now encoded as ra_game_state == GAME_LOAD_RETRY_PENDING.
-static bool ra_deferred_offline_notification = false; /* show "Offline" toast when Notification_init is ready */
+static bool ra_deferred_offline_notification = false; /* show LANG(OFFLINE) toast when Notification_init is ready */
 static bool ra_deferred_sync_pending = false;         /* sync should start when game is loaded */
-static bool ra_user_saw_offline = false;              /* user has seen the "Offline" notification */
+static bool ra_user_saw_offline = false;              /* user has seen the LANG(OFFLINE) notification */
 static bool ra_sync_apply_pending = false;            /* sync results waiting to be applied */
 static uint32_t ra_sync_apply_ids[RA_EVQ_MAX_SYNC_IDS];
 static uint32_t ra_sync_apply_timestamps[RA_EVQ_MAX_SYNC_IDS];
@@ -1384,7 +1385,7 @@ static void ra_event_handler(const rc_client_event_t* event, rc_client_t* client
 		break;
 		
 	case RC_CLIENT_EVENT_GAME_COMPLETED:
-		Notification_push(NOTIFICATION_ACHIEVEMENT, "Game Mastered!", NULL);
+		Notification_push(NOTIFICATION_ACHIEVEMENT, LANG(GAME_MASTERED), NULL);
 		RA_LOG_INFO("Game mastered!\n");
 		break;
 		
@@ -1495,18 +1496,18 @@ static void ra_login_callback(int result, const char* error_message,
 			       ra_login_state_str(ra_get_login_state()),
 			       ra_login_retry.count, RA_LOGIN_MAX_RETRIES, delay);
 			
-			// Show "Connecting..." notification on first retry only
+			// Show LANG(CONNECTING_DOTDOTDOT) notification on first retry only
 			if (ra_login_retry.count == 1 && !ra_login_retry.notified_connecting) {
 				ra_login_retry.notified_connecting = true;
 				Notification_push(NOTIFICATION_ACHIEVEMENT, 
-				                  "Connecting to RetroAchievements...", NULL);
+				                  LANG(CONNECTING_TO_RETROACHIEVEMENTS), NULL);
 			}
 		} else {
 			// All retries exhausted — transition to FAILED
 			ra_login_state = LOGIN_FAILED;
 			RA_LOG_ERROR("All login retries exhausted\n");
 			Notification_push(NOTIFICATION_ACHIEVEMENT, 
-			                  "RetroAchievements: Connection failed", NULL);
+			                  LANG(RETROACHIEVEMENTS_CONNECTION_FAILED), NULL);
 			ra_reset_login_retry();
 			if (ra_game_state == GAME_PENDING_LOGIN) {
 				ra_game_state = GAME_NONE;
@@ -2508,7 +2509,7 @@ static void action_probe_online(const RAEvent* ev) {
 	            ev->data.probe_online.hardcore_enable);
 	
 	// If the deferred offline notification hasn't been shown yet, cancel it.
-	// The user never saw "Offline" so showing "Connected" is meaningless noise.
+	// The user never saw LANG(OFFLINE) so showing "Connected" is meaningless noise.
 	if (ra_deferred_offline_notification) {
 		ra_deferred_offline_notification = false;
 		RA_LOG_INFO("Probe: cancelled pending offline notification "

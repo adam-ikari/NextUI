@@ -11,6 +11,7 @@
 #include "api.h"
 #include "utils.h"
 #include "config.h"
+#include "lang.h"
 #include <sys/resource.h>
 #include <pthread.h>
 #include <assert.h>
@@ -840,13 +841,13 @@ static Array* getQuickToggles(void) {
 
 	// quick actions
 	if(WIFI_supported())
-		Array_push(entries, Entry_new("Wifi", ENTRY_DIP));
+		Array_push(entries, Entry_new(LANG(WIFI), ENTRY_DIP));
 	if(BT_supported())
-		Array_push(entries, Entry_new("Bluetooth", ENTRY_DIP));
+		Array_push(entries, Entry_new(LANG(BLUETOOTH), ENTRY_DIP));
 	if(PLAT_supportsDeepSleep() && !simple_mode)
-		Array_push(entries, Entry_new("Sleep", ENTRY_DIP));
-	Array_push(entries, Entry_new("Reboot", ENTRY_DIP));
-	Array_push(entries, Entry_new("Poweroff", ENTRY_DIP));
+		Array_push(entries, Entry_new(LANG(SLEEP), ENTRY_DIP));
+	Array_push(entries, Entry_new(LANG(REBOOT), ENTRY_DIP));
+	Array_push(entries, Entry_new(LANG(POWEROFF), ENTRY_DIP));
 
 	return entries;
 }
@@ -2951,14 +2952,14 @@ int main (int argc, char *argv[]) {
 								GFX_animateSurface(tmpsur,0-screen->w,0,0,0,screen->w,screen->h,CFG_getMenuTransitions() ? 80:20,0,255,LAYER_ALL);
 						}
 						SDL_FreeSurface(tmpsur);
-						GFX_blitMessage(font.large, "No Preview", screen, &preview_rect);
+						GFX_blitMessage(font.large, LANG(NO_PREVIEW), screen, &preview_rect);
 					}
 					Entry_free(selectedEntry);
 				}
 				else {
 					SDL_Rect preview_rect = {ox,oy,screen->w,screen->h};
 					SDL_FillRect(screen, &preview_rect, 0);
-					GFX_blitMessage(font.large, "No Recents", screen, &preview_rect);
+					GFX_blitMessage(font.large, LANG(NO_RECENTS), screen, &preview_rect);
 					GFX_blitButtonGroup((char*[]){ "B","BACK", NULL }, 1, screen, 1);
 				}
 
@@ -3166,7 +3167,7 @@ int main (int argc, char *argv[]) {
 				}
 				else {
 					// TODO: for some reason screen's dimensions end up being 0x0 in GFX_blitMessage...
-					GFX_blitMessage(font.large, "Empty folder", screen, &(SDL_Rect){0,0,screen->w,screen->h}); //, NULL);
+					GFX_blitMessage(font.large, LANG(EMPTY_FOLDER), screen, &(SDL_Rect){0,0,screen->w,screen->h}); //, NULL);
 				}
 
 				lastScreen = SCREEN_GAMELIST;

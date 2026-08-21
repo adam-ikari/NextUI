@@ -15,6 +15,7 @@
 #include <sys/mman.h>
 #include <unistd.h>
 #include <sys/stat.h>
+#include <string.h>
 
 #include "utils.h"
 #include "config.h"
@@ -323,7 +324,6 @@ int GFX_loadSystemFont(const char *fontPath)
 	font.small = TTF_OpenFont(fontPath, SCALE1(FONT_SMALL));
 	font.tiny = TTF_OpenFont(fontPath, SCALE1(FONT_TINY));
 	font.micro = TTF_OpenFont(fontPath, SCALE1(FONT_MICRO));
-
 	TTF_SetFontStyle(font.large, CFG_getFontStyle());
 	TTF_SetFontStyle(font.medium, CFG_getFontStyle());
 	TTF_SetFontStyle(font.small, CFG_getFontStyle());
