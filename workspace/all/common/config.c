@@ -65,6 +65,7 @@ void CFG_defaults(NextUISettings *cfg)
         .gameSwitcherCurtain = CFG_DEFAULT_GAMESWITCHER_CURTAIN,
 
         .muteLeds = CFG_DEFAULT_MUTELEDS,
+	.chargeLEDs = CFG_DEFAULT_CHARGELEDS,
 
         .fnAction = {CFG_DEFAULT_FN_ACTION, CFG_DEFAULT_FN_ACTION, CFG_DEFAULT_FN_ACTION},
 
@@ -351,6 +352,11 @@ void CFG_init(FontLoad_callback_t cb, ColorSet_callback_t ccb)
             if (sscanf(line, "muteLeds=%i", &temp_value) == 1)
             {
                 CFG_setMuteLEDs(temp_value);
+                continue;
+            }
+            if (sscanf(line, "chargeLEDs=%i", &temp_value) == 1)
+            {
+                CFG_setChargeLEDs(temp_value);
                 continue;
             }
             if (strncmp(line, "fn1action=", 10) == 0)
@@ -938,6 +944,17 @@ void CFG_setMuteLEDs(bool on)
     CFG_sync();
 }
 
+bool CFG_getChargeLEDs(void)
+{
+    return settings.chargeLEDs;
+}
+
+void CFG_setChargeLEDs(bool on)
+{
+    settings.chargeLEDs = on;
+    CFG_sync();
+}
+
 const char* CFG_getFnAction(int index)
 {
     if (index < 0 || index >= FN_BUTTON_COUNT)
@@ -1467,6 +1484,10 @@ void CFG_get(const char *key, char *value)
     {
         sprintf(value, "%i", CFG_getMuteLEDs());
     }
+    else if (strcmp(key, "chargeLEDs") == 0)
+    {
+        sprintf(value, "%i", CFG_getChargeLEDs());
+    }
     else if (strcmp(key, "fn1action") == 0)
     {
         sprintf(value, "%s", CFG_getFnAction(0));
@@ -1661,6 +1682,7 @@ void CFG_sync(void)
     fprintf(file, "stateFormat=%i\n", settings.stateFormat);
     fprintf(file, "useExtractedFileName=%i\n", settings.useExtractedFileName);
     fprintf(file, "muteLeds=%i\n", settings.muteLeds);
+    fprintf(file, "chargeLEDs=%i\n", settings.chargeLEDs);
     fprintf(file, "fn1action=%s\n", settings.fnAction[0]);
     fprintf(file, "fn2action=%s\n", settings.fnAction[1]);
     fprintf(file, "fn3action=%s\n", settings.fnAction[2]);
@@ -1735,6 +1757,7 @@ void CFG_print(void)
     printf("\t\"stateFormat\": %i,\n", settings.stateFormat);
     printf("\t\"useExtractedFileName\": %i,\n", settings.useExtractedFileName);
     printf("\t\"muteLeds\": %i,\n", settings.muteLeds);
+    printf("\t\"chargeLEDs\": %i,\n", settings.chargeLEDs);
     printf("\t\"fn1action\": \"%s\",\n", settings.fnAction[0]);
     printf("\t\"fn2action\": \"%s\",\n", settings.fnAction[1]);
     printf("\t\"fn3action\": \"%s\",\n", settings.fnAction[2]);

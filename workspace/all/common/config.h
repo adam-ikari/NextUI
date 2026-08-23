@@ -144,6 +144,7 @@ typedef struct
 
 	// Mute switch
 	bool muteLeds;
+	bool chargeLEDs; // enable/disable charging LED effect
 
 	// User-assignable buttons (see BTN_FN1/BTN_FN2/BTN_FN3 in platform.h).
 	// Action strings, "" == unassigned. See CFG_getFnAction().
@@ -237,6 +238,7 @@ typedef struct
 #define CFG_DEFAULT_STATEFORMAT STATE_FORMAT_SAV
 #define CFG_DEFAULT_EXTRACTEDFILENAME false
 #define CFG_DEFAULT_MUTELEDS false
+#define CFG_DEFAULT_CHARGELEDS true
 #define CFG_DEFAULT_FN_ACTION "" // unassigned
 #define CFG_DEFAULT_GAMEARTWIDTH 0.45
 #define CFG_DEFAULT_WIFI false
@@ -387,6 +389,9 @@ void CFG_setUseExtractedFileName(bool);
 // Enable/disable mute also shutting off LEDs.
 bool CFG_getMuteLEDs(void);
 void CFG_setMuteLEDs(bool);
+// Enable/disable charging LED effect.
+bool CFG_getChargeLEDs(void);
+void CFG_setChargeLEDs(bool);
 // The action bound to a user-assignable button, where `index` is 0 (FN1), 1 (FN2) or
 // 2 (FN3, the "HOME" button).
 // The value is a "<kind>:<arg>" action string so more kinds can be added later without

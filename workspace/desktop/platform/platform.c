@@ -79,6 +79,11 @@ int PLAT_pickSampleRate(int requested, int max) {
 	return MIN(requested, max);
 }
 
+// Desktop SDL2 (ALSA/PulseAudio) accepts any sample rate.
+int PLAT_audioIsBitPerfect(int requested) {
+	return 1;
+}
+
 char* PLAT_getModel(void) {
 	return "Desktop";
 }

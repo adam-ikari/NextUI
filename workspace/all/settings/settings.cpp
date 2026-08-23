@@ -674,6 +674,10 @@ int main(int argc, char *argv[])
             CFG_setLanguage(std::any_cast<std::string>(value).c_str());
         },
         []() { CFG_setLanguage("en"); }});
+    systemItems.push_back(new MenuItem{ListItemType::Generic, LANG(CHARGE_LED), LANG(CHARGE_LED_DESC), {false, true}, on_off,
+        []() -> std::any { return CFG_getChargeLEDs(); },
+        [](const std::any &value) { CFG_setChargeLEDs(std::any_cast<bool>(value)); },
+        []() { CFG_setChargeLEDs(CFG_DEFAULT_CHARGELEDS); }});
     auto systemMenu = new MenuList(MenuItemType::Fixed, LANG(SYSTEM), systemItems);
 
         std::vector<AbstractMenuItem*> muteItems =

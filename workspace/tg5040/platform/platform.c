@@ -370,10 +370,28 @@ int PLAT_pickSampleRate(int requested, int max) {
 	// bluetooth: allow limiting the maximum to improve compatibility
 	if(PLAT_bluetoothConnected())
 		return MIN(requested, CFG_getBluetoothSamplingrateLimit());
-
-	return MIN(requested, max);
+	// Hardware supported rates: 44100 and 48000 are always native.
+	// SFC (32040) / GBA (32768) are not natively supported -> fall back to 48000.
+	switch (requested) {
+		case 44100: case 48000: case 32000: case 22050:
+		case 16000: case 11025: case 8000:
+			return MIN(requested, max);
+		default:
+			return MIN(48000, max);
+	}
 }
 
+int PLAT_audioIsBitPerfect(int requested) {
+	if(PLAT_bluetoothConnected())
+		return 0;
+	switch (requested) {
+		case 44100: case 48000: case 32000: case 22050:
+		case 16000: case 11025: case 8000:
+			return 1;
+		default:
+			return 0;
+	}
+}
 void PLAT_overrideMute(int mute) {
 	putInt("/sys/class/speaker/mute", mute);
 }

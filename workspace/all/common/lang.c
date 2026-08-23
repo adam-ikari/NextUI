@@ -308,6 +308,8 @@ static const LangEntry lang_entries[LANG_COUNT] = {
     LANG_E(LANG_SHADER_3_TEXTURE_TYPE, "Shader 3 Texture Type", "着色器 3 纹理类型"),
     LANG_E(LANG_SHADER_EMULATOR_SETTINGS_PRESET, "Shader / Emulator Settings Preset", "着色器/模拟器设置预设"),
     LANG_E(LANG_THIS_WILL_CHOOSE_RESOLUTION_SOURCE_TO_SCALE_FROM, "This will choose resolution source to scale from", "选择缩放参考分辨率来源"),
+    LANG_E(LANG_CHARGE_LED, "Charge LED", "充电 LED"),
+    LANG_E(LANG_CHARGE_LED_DESC, "Show LED effects while charging", "充电时显示 LED 灯效"),
 };
 
 static LangId current_lang = LANG_ID_EN;

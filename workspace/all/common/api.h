@@ -750,6 +750,7 @@ void PLAT_setCPUSpeed(int speed); // enum
 void PLAT_pinToCores(int core_type); // CPU_CORE_EFFICIENCY or CPU_CORE_PERFORMANCE
 void PLAT_setRumble(int strength);
 int PLAT_pickSampleRate(int requested, int max);
+int PLAT_audioIsBitPerfect(int requested);
 
 char* PLAT_getModel(void);
 void PLAT_getOsVersionInfo(char *output_str, size_t max_len);

@@ -209,6 +209,7 @@ static struct SND_Context
 	int frame_filled; // max_buf_w
 
 	int device_id; // SDL device id
+	int bit_perfect; // 1 when core rate == device rate, skip SRC
 } snd = {0};
 
 ///////////////////////////////
@@ -2942,6 +2943,19 @@ size_t SND_batchSamples(const SND_Frame *frames, size_t frame_count)
 		consumed += amount;
 		framecount -= amount;
 
+		// Bit-perfect passthrough: core rate matches device rate,
+		// ratio is ~1.0, and hardware natively supports this rate.
+		// Skip SRC entirely — saves CPU and eliminates double conversion.
+		if (snd.bit_perfect && fabs(ratio - 1.0) < 0.001) {
+			pthread_mutex_lock(&audio_mutex);
+			for (int i = 0; i < amount; i++) {
+				snd.buffer[snd.frame_in] = tmpbuffer[i];
+				snd.frame_in = (snd.frame_in + 1) % snd.frame_count;
+			}
+			pthread_mutex_unlock(&audio_mutex);
+			total_consumed_frames += amount;
+			continue;
+		}
 		ResampledFrames resampled = resample_audio(
 			tmpbuffer, amount, snd.sample_rate_in, snd.sample_rate_out, ratio);
 
@@ -3069,6 +3083,19 @@ size_t SND_batchSamples_fixed_rate(const SND_Frame *frames, size_t frame_count)
 		consumed += amount;
 		framecount -= amount;
 
+		// Bit-perfect passthrough: core rate matches device rate,
+		// ratio is ~1.0, and hardware natively supports this rate.
+		// Skip SRC entirely — saves CPU and eliminates double conversion.
+		if (snd.bit_perfect && fabs(ratio - 1.0) < 0.001) {
+			pthread_mutex_lock(&audio_mutex);
+			for (int i = 0; i < amount; i++) {
+				snd.buffer[snd.frame_in] = tmpbuffer[i];
+				snd.frame_in = (snd.frame_in + 1) % snd.frame_count;
+			}
+			pthread_mutex_unlock(&audio_mutex);
+			total_consumed_frames += amount;
+			continue;
+		}
 		ResampledFrames resampled = resample_audio(
 			tmpbuffer, amount, snd.sample_rate_in, snd.sample_rate_out, ratio);
 
@@ -3160,6 +3187,12 @@ void SND_init(double sample_rate, double frame_rate)
 	perf.buffer_size = snd.frame_count;
 	snd.sample_rate_in = sample_rate;
 	snd.sample_rate_out = spec_out.freq;
+	// bit-perfect when: core rate == device rate, ratio will be ~1.0,
+	// and the hardware natively supports this rate.
+	// This avoids costing SRC CPU cycles + eliminates double-SRC risk.
+	snd.bit_perfect = (sample_rate == spec_out.freq) && PLAT_audioIsBitPerfect(sample_rate);
+	LOG_info("SND: rate_in=%d rate_out=%d bit_perfect=%d\n",
+		snd.sample_rate_in, snd.sample_rate_out, snd.bit_perfect);
 	perf.samplerate_in = snd.sample_rate_in;
 	perf.samplerate_out = snd.sample_rate_out;
 
@@ -4506,7 +4539,7 @@ void LEDS_applyRules()
 	// of LightProfile enum.
 	// e.g.
 	// - if charging and low battery, charging takes priority
-	if (pwr.initialized && SDL_AtomicGet(&pwr.is_charging)) {
+	if (pwr.initialized && SDL_AtomicGet(&pwr.is_charging) && CFG_getChargeLEDs()) {
 		//LOG_info("LEDS_applyRules: charging\n");
 		LEDS_setProfile(LIGHT_PROFILE_CHARGING);
 	}
