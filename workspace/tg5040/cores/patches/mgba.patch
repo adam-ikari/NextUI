@@ -1,0 +1,23 @@
+diff --git forkSrcPrefix/src/platform/libretro/libretro-audio.h forkDstPrefix/src/platform/libretro/libretro-audio.h
+--- forkSrcPrefix/src/platform/libretro/libretro-audio.h
++++ forkDstPrefix/src/platform/libretro/libretro-audio.h
+@@ -11,7 +11,7 @@
+ #include <stdint.h>
+ #include <stdbool.h>
+ 
+-#define GBA_OUTPUT_RATE 65536
++#define GBA_OUTPUT_RATE 48000
+ 
+ enum LibretroAudioMode {
+ 	CONV_PASSTHROUGH,
+diff --git forkSrcPrefix/src/gba/audio.c forkDstPrefix/src/gba/audio.c
+--- forkSrcPrefix/src/gba/audio.c
++++ forkDstPrefix/src/gba/audio.c
+@@ -51,7 +51,7 @@ void GBAAudioInit(struct GBAAudio* audio, size_t samples) {
+ 	audio->forceDisableChB = false;
+ 	audio->masterVolume = GBA_AUDIO_VOLUME_MAX;
+-	audio->sampleInterval = GBA_ARM7TDMI_FREQUENCY / 0x8000;
++	audio->sampleInterval = GBA_ARM7TDMI_FREQUENCY / 48000;
+ }
+ 
+ void GBAAudioDeinit(struct GBAAudio* audio) {
