@@ -5,6 +5,7 @@ extern "C"
 #include "defines.h"
 #include "api.h"
 #include "utils.h"
+#include "lang.h"
 }
 
 #include <cmath>
@@ -497,7 +498,7 @@ SDL_Rect MenuList::itemSizeHint(const AbstractMenuItem &item)
     {
         // calculate the size of the list
         int w = 0;
-        TTF_SizeUTF8(font.small, item.getName().c_str(), &w, NULL);
+        TTF_SizeUTF8(font.large, item.getName().c_str(), &w, NULL);
         w += SCALE1(OPTION_PADDING * 2);
         return {0, 0, w, SCALE1(PILL_SIZE)};
     }
@@ -506,7 +507,7 @@ SDL_Rect MenuList::itemSizeHint(const AbstractMenuItem &item)
         int w = 0;
         int lw = 0;
         int rw = 0;
-        TTF_SizeUTF8(font.small, item.getName().c_str(), &lw, NULL);
+        TTF_SizeUTF8(font.large, item.getName().c_str(), &lw, NULL);
         // get the width of the widest row
         int mrw = 0;
         // every value list in an input table is the same
@@ -515,7 +516,7 @@ SDL_Rect MenuList::itemSizeHint(const AbstractMenuItem &item)
         {
             for (int j = 0; item.getValues().size() > j && !item.getLabels()[j].empty(); j++)
             {
-                TTF_SizeUTF8(font.tiny, item.getLabels()[j].c_str(), &rw, NULL);
+                TTF_SizeUTF8(font.small, item.getLabels()[j].c_str(), &rw, NULL);
                 if (lw + rw > w)
                     w = lw + rw;
                 if (rw > mrw)
@@ -600,8 +601,8 @@ void MenuList::draw(SDL_Surface *surface, const SDL_Rect &dst, const SDL_Rect &d
         {
             int w, h;
             const auto description = cur->getDesc();
-            GFX_sizeText(font.tiny, description.c_str(), SCALE1(FONT_SMALL), &w, &h);
-            GFX_blitTextCPP(font.tiny, description.c_str(), SCALE1(FONT_SMALL), uintToColour(THEME_COLOR4_255), surface, {(dst.x + dst.w - w) / 2, dst.y + dst.h - h, w, h});
+            GFX_sizeText(font.small, description.c_str(), SCALE1(FONT_SMALL), &w, &h);
+            GFX_blitTextCPP(font.small, description.c_str(), SCALE1(FONT_SMALL), uintToColour(THEME_COLOR4_255), surface, {(dst.x + dst.w - w) / 2, dst.y + dst.h - h, w, h});
         }
     }
 
@@ -651,13 +652,13 @@ void MenuList::drawListItem(SDL_Surface *surface, const SDL_Rect &dst, const Abs
     {
         // move out of conditional if centering
         int w = 0;
-        TTF_SizeUTF8(font.small, item.getName().c_str(), &w, NULL);
+        TTF_SizeUTF8(font.large, item.getName().c_str(), &w, NULL);
         w += SCALE1(OPTION_PADDING * 2);
 
         GFX_blitPillDarkCPP(ASSET_BUTTON, surface, {dst.x, dst.y, w, SCALE1(BUTTON_SIZE)});
         text_color = uintToColour(THEME_COLOR5_255);
     }
-    text = TTF_RenderUTF8_Blended(font.small, item.getName().c_str(), text_color);
+    text = TTF_RenderUTF8_Blended(font.large, item.getName().c_str(), text_color);
     SDL_BlitSurfaceCPP(text, {}, surface, {dst.x + SCALE1(OPTION_PADDING), dst.y  + ((dst.h - text->h) / 2)});
     SDL_FreeSurface(text);
 }
@@ -717,7 +718,7 @@ void MenuList::drawFixedItem(SDL_Surface *surface, const SDL_Rect &dst, const Ab
 
     if (item.getValue().has_value())
     {
-        text = TTF_RenderUTF8_Blended(font.tiny, item.getLabel().c_str(), text_color_value);
+        text = TTF_RenderUTF8_Blended(font.small, item.getLabel().c_str(), text_color_value);
 
         if (item.getType() == ListItemType::Color)
         {
@@ -761,13 +762,13 @@ void MenuList::drawFixedItem(SDL_Surface *surface, const SDL_Rect &dst, const Ab
     {
         // white pill
         int w = 0;
-        TTF_SizeUTF8(font.small, item.getName().c_str(), &w, NULL);
+        TTF_SizeUTF8(font.large, item.getName().c_str(), &w, NULL);
         w += SCALE1(OPTION_PADDING * 2);
         GFX_blitPillDarkCPP(ASSET_BUTTON, surface, {dst.x, dst.y, w, SCALE1(BUTTON_SIZE)});
         text_color = uintToColour(THEME_COLOR5_255);
     }
 
-    text = TTF_RenderUTF8_Blended(font.small, item.getName().c_str(), text_color);
+    text = TTF_RenderUTF8_Blended(font.large, item.getName().c_str(), text_color);
     SDL_BlitSurfaceCPP(text, {}, surface, {dst.x + SCALE1(OPTION_PADDING), dst.y + ((dst.h - text->h) / 2)});
     SDL_FreeSurface(text);
 }
@@ -817,12 +818,12 @@ void MenuList::drawInputItem(SDL_Surface *surface, const SDL_Rect &dst, const Ab
 
         // white pill
         int w = 0;
-        TTF_SizeUTF8(font.small, item.getName().c_str(), &w, NULL);
+        TTF_SizeUTF8(font.large, item.getName().c_str(), &w, NULL);
         w += SCALE1(OPTION_PADDING * 2);
         GFX_blitPillDarkCPP(ASSET_BUTTON, surface, {dst.x, dst.y, w, SCALE1(BUTTON_SIZE)});
         text_color = COLOR_BLACK;
     }
-    text = TTF_RenderUTF8_Blended(font.small, item.getName().c_str(), text_color);
+    text = TTF_RenderUTF8_Blended(font.large, item.getName().c_str(), text_color);
     SDL_BlitSurfaceCPP(text, {}, surface, {dst.x + SCALE1(OPTION_PADDING), dst.y + ((dst.h - text->h) / 2)});
     SDL_FreeSurface(text);
 
@@ -832,7 +833,7 @@ void MenuList::drawInputItem(SDL_Surface *surface, const SDL_Rect &dst, const Ab
     }
     else if (item.getValue().has_value())
     {
-        text = TTF_RenderUTF8_Blended(font.tiny, item.getLabel().c_str(), COLOR_WHITE); // always white
+        text = TTF_RenderUTF8_Blended(font.small, item.getLabel().c_str(), COLOR_WHITE); // always white
         SDL_BlitSurfaceCPP(text, {}, surface, {dst.x + mw - text->w - SCALE1(OPTION_PADDING), dst.y + ((dst.h - text->h) / 2)});
         SDL_FreeSurface(text);
     }
@@ -859,7 +860,7 @@ void MenuList::drawMain(SDL_Surface *surface, const SDL_Rect &dst, const SDL_Rec
     }
     else
     {
-        GFX_blitMessageCPP(font.large, "Empty folder", surface, dst);
+        GFX_blitMessageCPP(font.large, LANG(EMPTY_FOLDER), surface, dst);
     }
 }
 

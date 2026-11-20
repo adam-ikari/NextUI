@@ -81,7 +81,7 @@ static const std::vector<std::any> colors = {
     0x221100U, 0x442200U, 0x663300U, 0x884400U, 0xAA5500U, 0xCC6600U, 0xFF8833U, 0xFF994DU, 0xFFAA66U, 0xFFBB80U, 0xFFCC99U, 0xFFDDB3U,
     0x000000U, 0x141414U, 0x282828U, 0x3C3C3CU, 0x505050U, 0x646464U, 0x8C8C8CU, 0xA0A0A0U, 0xB4B4B4U, 0xC8C8C8U, 0xDCDCDCU, 0xFFFFFFU};
 // all colors above but as strings
-static const std::vector<std::string> color_strings = {
+static std::vector<std::string> color_strings = {
     "0x000022", "0x000044", "0x000066", "0x000088", "0x0000AA", "0x0000CC", "0x1E2329", "0x3366FF", "0x4D7AFF", "0x6699FF", "0x80B3FF", "0x99CCFF", "0xB3D9FF",
     "0x002222", "0x004444", "0x006666", "0x008888", "0x00AAAA", "0x00CCCC", "0x33FFFF", "0x4DFFFF", "0x66FFFF", "0x80FFFF", "0x99FFFF", "0xB3FFFF",
     "0x002200", "0x004400", "0x006600", "0x008800", "0x00AA00", "0x00CC00", "0x33FF33", "0x4DFF4D", "0x66FF66", "0x80FF80", "0x99FF99", "0xB3FFB3",
@@ -138,35 +138,35 @@ static std::vector<FontEntry> enumerateFonts() {
 }
 
 static const std::vector<std::any>    screen_timeout_secs = {0U, 5U, 10U, 15U, 30U, 45U, 60U, 90U, 120U, 240U, 360U, 600U};
-static const std::vector<std::string> screen_timeout_labels = {"Never", "5s", "10s", "15s", "30s", "45s", "60s", "90s", "2m", "4m", "6m", "10m"};
+static std::vector<std::string> screen_timeout_labels = {LANG(NEVER), "5s", "10s", "15s", "30s", "45s", "60s", "90s", "2m", "4m", "6m", "10m"};
 
 static const std::vector<std::any>    sleep_timeout_secs = {5U, 10U, 15U, 30U, 45U, 60U, 90U, 120U, 240U, 360U, 600U};
-static const std::vector<std::string> sleep_timeout_labels = {"5s", "10s", "15s", "30s", "45s", "60s", "90s", "2m", "4m", "6m", "10m"};
+static std::vector<std::string> sleep_timeout_labels = {"5s", "10s", "15s", "30s", "45s", "60s", "90s", "2m", "4m", "6m", "10m"};
 
-static const std::vector<std::string> on_off = {"Off", "On"};
+static std::vector<std::string> on_off = {LANG(OFF), LANG(ON)};
 
-static const std::vector<std::string> scaling_strings = {"Fullscreen", "Fit", "Fill"};
+static std::vector<std::string> scaling_strings = {LANG(FULLSCREEN), LANG(FIT), LANG(FILL)};
 static const std::vector<std::any> scaling = {(int)GFX_SCALE_FULLSCREEN, (int)GFX_SCALE_FIT, (int)GFX_SCALE_FILL};
 
 // Notification duration options (in seconds)
 static const std::vector<std::any> notify_duration_values = {1, 2, 3, 4, 5};
-static const std::vector<std::string> notify_duration_labels = {"1s", "2s", "3s", "4s", "5s"};
+static std::vector<std::string> notify_duration_labels = {"1s", "2s", "3s", "4s", "5s"};
 
 // Progress notification duration options (in seconds, 0 = disabled)
 static const std::vector<std::any> progress_duration_values = {0, 1, 2, 3, 4, 5};
-static const std::vector<std::string> progress_duration_labels = {"Off", "1s", "2s", "3s", "4s", "5s"};
+static std::vector<std::string> progress_duration_labels = {LANG(OFF), "1s", "2s", "3s", "4s", "5s"};
 
 // Menu transition mode options
 static const std::vector<std::any>    transition_mode_values = {(int)TRANSITION_OFF, (int)TRANSITION_SNAPPY, (int)TRANSITION_COMFY};
-static const std::vector<std::string> transition_mode_labels = {"Off", "Snappy", "Comfy"};
+static std::vector<std::string> transition_mode_labels = {LANG(OFF), LANG(SNAPPY), LANG(COMFY)};
 
 // Game switcher curtain opacity options (0-100)
 static const std::vector<std::any>    curtain_opacity_values = {0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100};
-static const std::vector<std::string> curtain_opacity_labels = {"Off", "10%", "20%", "30%", "40%", "50%", "60%", "70%", "80%", "90%", "100%"};
+static std::vector<std::string> curtain_opacity_labels = {LANG(OFF), "10%", "20%", "30%", "40%", "50%", "60%", "70%", "80%", "90%", "100%"};
 
 // Input prompt style options
 static const std::vector<std::any>    input_prompt_style_values = {(int)INPUT_STYLE_TEXT, (int)INPUT_STYLE_ABXY, (int)INPUT_STYLE_CARDINALS, (int)INPUT_STYLE_SHAPES};
-static const std::vector<std::string> input_prompt_style_labels = {"Text", "ABXY", "Cardinals", "Shapes"};
+static std::vector<std::string> input_prompt_style_labels = {LANG(TEXT), LANG(ABXY), LANG(CARDINALS), LANG(SHAPES)};
 
 // RetroAchievements sort order options
 static const std::vector<std::any> ra_sort_values = {
@@ -182,30 +182,48 @@ static const std::vector<std::any> ra_sort_values = {
     (int)RA_SORT_TYPE_ASC,
     (int)RA_SORT_TYPE_DESC
 };
-static const std::vector<std::string> ra_sort_labels = {
-    "Unlocked First",
-    "Display Order (First)",
-    "Display Order (Last)",
-    "Won By (Most)",
-    "Won By (Least)",
-    "Points (Most)",
-    "Points (Least)",
-    "Title (A-Z)",
-    "Title (Z-A)",
-    "Type (Asc)",
-    "Type (Desc)"
+static std::vector<std::string> ra_sort_labels = {
+    LANG(UNLOCKED_FIRST),
+    LANG(DISPLAY_ORDER_FIRST),
+    LANG(DISPLAY_ORDER_LAST),
+    LANG(WON_BY_MOST),
+    LANG(WON_BY_LEAST),
+    LANG(POINTS_MOST),
+    LANG(POINTS_LEAST),
+    LANG(TITLE_AZ),
+    LANG(TITLE_ZA),
+    LANG(TYPE_ASC),
+    LANG(TYPE_DESC)
 };
 
+// LANG() uses the language configured by CFG_init(), which runs after these
+// globals are constructed. Refresh translated labels once settings are loaded.
+static void refreshLocalizedLabels()
+{
+    screen_timeout_labels[0] = LANG(NEVER);
+    on_off = {LANG(OFF), LANG(ON)};
+    scaling_strings = {LANG(FULLSCREEN), LANG(FIT), LANG(FILL)};
+    progress_duration_labels[0] = LANG(OFF);
+    transition_mode_labels = {LANG(OFF), LANG(SNAPPY), LANG(COMFY)};
+    curtain_opacity_labels[0] = LANG(OFF);
+    input_prompt_style_labels = {LANG(TEXT), LANG(ABXY), LANG(CARDINALS), LANG(SHAPES)};
+    ra_sort_labels = {
+        LANG(UNLOCKED_FIRST), LANG(DISPLAY_ORDER_FIRST), LANG(DISPLAY_ORDER_LAST),
+        LANG(WON_BY_MOST), LANG(WON_BY_LEAST), LANG(POINTS_MOST), LANG(POINTS_LEAST),
+        LANG(TITLE_AZ), LANG(TITLE_ZA), LANG(TYPE_ASC), LANG(TYPE_DESC)
+    };
+}
+
 namespace {
-    struct ColorDef { int id; const char *name; const char *desc; uint32_t defaultColor; };
+    struct ColorDef { int id; LangKey name; LangKey desc; uint32_t defaultColor; };
     static const ColorDef g_colorDefs[] = {
-        {1, "Main Color",             "The color used to render main UI elements.",                          CFG_DEFAULT_COLOR1},
-        {2, "Primary Accent Color",   "The color used to highlight important things in the user interface.", CFG_DEFAULT_COLOR2},
-        {3, "Secondary Accent Color", "A secondary highlight color.",                                        CFG_DEFAULT_COLOR3},
-        {4, "List Text",              "List text color",                                                     CFG_DEFAULT_COLOR4},
-        {5, "List Text Selected",     "List selected text color",                                            CFG_DEFAULT_COLOR5},
-        {6, "Hint info Color",        "Color for button hints and info",                                     CFG_DEFAULT_COLOR6},
-        {7, "Background Color",       "Background color used when no background image is set.",              CFG_DEFAULT_COLOR7},
+        {1, LANG_MAIN_COLOR,             LANG_MAIN_COLOR_DESC,             CFG_DEFAULT_COLOR1},
+        {2, LANG_PRIMARY_ACCENT_COLOR,   LANG_PRIMARY_ACCENT_COLOR_DESC,   CFG_DEFAULT_COLOR2},
+        {3, LANG_SECONDARY_ACCENT_COLOR, LANG_SECONDARY_ACCENT_COLOR_DESC, CFG_DEFAULT_COLOR3},
+        {4, LANG_LIST_TEXT,              LANG_LIST_TEXT_DESC,              CFG_DEFAULT_COLOR4},
+        {5, LANG_LIST_TEXT_SELECTED,     LANG_LIST_TEXT_SELECTED_DESC,     CFG_DEFAULT_COLOR5},
+        {6, LANG_HINT_INFO_COLOR,        LANG_HINT_INFO_COLOR_DESC,        CFG_DEFAULT_COLOR6},
+        {7, LANG_BACKGROUND_COLOR,       LANG_BACKGROUND_COLOR_DESC,       CFG_DEFAULT_COLOR7},
     };
 
     static std::vector<ColorPreset> buildColorPresets(int excludeId)
@@ -214,7 +232,7 @@ namespace {
         for (const auto &def : g_colorDefs)
         {
             if (def.id != excludeId)
-                result.push_back({CFG_getColor(def.id), def.name});
+                result.push_back({CFG_getColor(def.id), LANG_get(def.name)});
         }
         return result;
     }
@@ -412,6 +430,7 @@ int main(int argc, char *argv[])
         PLAT_getOsVersionInfo(version, 128);
         LOG_info("This is stock OS version %s\n", version);
         InitSettings();
+        refreshLocalizedLabels();
 
         PWR_setCPUSpeed(CPU_SPEED_AUTO);
 
@@ -465,7 +484,7 @@ int main(int argc, char *argv[])
         pickers.reserve(std::size(g_colorDefs));
         for (const auto &def : g_colorDefs)
             pickers.push_back(std::make_unique<ColorPickerMenu>(
-                CFG_getColor(def.id), makeColorSetter(def.id), buildColorPresets(def.id), def.name));
+                CFG_getColor(def.id), makeColorSetter(def.id), buildColorPresets(def.id), LANG_get(def.name)));
 
         // Build color MenuItems (loop order = g_colorDefs order = display order)
         std::vector<AbstractMenuItem *> colorMenuItems;
@@ -475,11 +494,11 @@ int main(int argc, char *argv[])
             const auto &def = g_colorDefs[i];
             ColorPickerMenu *picker = pickers[i].get();
             colorMenuItems.push_back(new MenuItem{
-                ListItemType::Color, def.name, def.desc, colors, color_strings,
+                ListItemType::Color, LANG_get(def.name), LANG_get(def.desc), colors, color_strings,
                 makeColorGetter(def.id),
                 makeColorSetter(def.id),
                 makeColorResetter(def.id, def.defaultColor),
-                makeColorOpener(picker, def.id, def.name), picker});
+                makeColorOpener(picker, def.id, LANG_get(def.name)), picker});
         }
 
         std::vector<AbstractMenuItem *> appearanceItems;
@@ -517,7 +536,7 @@ int main(int argc, char *argv[])
             []() -> std::any{ return CFG_getThumbnailRadius(); },
             [](const std::any &value) { CFG_setThumbnailRadius(std::any_cast<int>(value)); },
             []() { CFG_setThumbnailRadius(CFG_DEFAULT_THUMBRADIUS);}});
-        appearanceItems.push_back(new MenuItem{ListItemType::Generic, LANG(GAME_ART_WIDTH), "Set the percentage of screen width used for game art.\nUI elements might overrule this to avoid clipping.",
+        appearanceItems.push_back(new MenuItem{ListItemType::Generic, LANG(GAME_ART_WIDTH), LANG(GAME_ART_WIDTH_DESC),
             5, 100, "%",
             []() -> std::any{ return (int)(CFG_getGameArtWidth() * 100); },
             [](const std::any &value) { CFG_setGameArtWidth((double)std::any_cast<int>(value) / 100.0); },
@@ -526,11 +545,11 @@ int main(int argc, char *argv[])
             []() -> std::any { return CFG_getShowFolderNamesAtRoot(); },
             [](const std::any &value) { CFG_setShowFolderNamesAtRoot(std::any_cast<bool>(value)); },
             []() { CFG_setShowFolderNamesAtRoot(CFG_DEFAULT_SHOWFOLDERNAMESATROOT);}});
-        appearanceItems.push_back(new MenuItem{ListItemType::Generic, LANG(SHOW_RECENTS), "Show \"Recently Played\" menu entry in game list.", {false, true}, on_off,
+        appearanceItems.push_back(new MenuItem{ListItemType::Generic, LANG(SHOW_RECENTS), LANG(SHOW_RECENTS_DESC), {false, true}, on_off,
             []() -> std::any { return CFG_getShowRecents(); },
             [](const std::any &value) { CFG_setShowRecents(std::any_cast<bool>(value)); },
             []() { CFG_setShowRecents(CFG_DEFAULT_SHOWRECENTS);}});
-        appearanceItems.push_back(new MenuItem{ListItemType::Generic, LANG(SHOW_TOOLS), "Show \"Tools\" menu entry in game list.", {false, true}, on_off,
+        appearanceItems.push_back(new MenuItem{ListItemType::Generic, LANG(SHOW_TOOLS), LANG(SHOW_TOOLS_DESC), {false, true}, on_off,
             []() -> std::any { return CFG_getShowTools(); },
             [](const std::any &value) { CFG_setShowTools(std::any_cast<bool>(value)); },
             []() { CFG_setShowTools(CFG_DEFAULT_SHOWTOOLS);}});
@@ -538,15 +557,15 @@ int main(int argc, char *argv[])
             []() -> std::any { return CFG_getShowGameArt(); },
             [](const std::any &value) { CFG_setShowGameArt(std::any_cast<bool>(value)); },
             []() { CFG_setShowGameArt(CFG_DEFAULT_SHOWGAMEART);}});
-        appearanceItems.push_back(new MenuItem{ListItemType::Generic, LANG(USE_FOLDER_BACKGROUND_FOR_ROMS), "If enabled, used the emulator background image. Otherwise uses the default.", {false, true}, on_off,
+        appearanceItems.push_back(new MenuItem{ListItemType::Generic, LANG(USE_FOLDER_BACKGROUND_FOR_ROMS), LANG(USE_EMULATOR_BACKGROUND_DESC), {false, true}, on_off,
             []() -> std::any { return CFG_getRomsUseFolderBackground(); },
             [](const std::any &value) { CFG_setRomsUseFolderBackground(std::any_cast<bool>(value)); },
             []() { CFG_setRomsUseFolderBackground(CFG_DEFAULT_ROMSUSEFOLDERBACKGROUND);}});
-        appearanceItems.push_back(new MenuItem{ListItemType::Generic, LANG(SHOW_QUICKSWITCHER_UI), "Show/hide Quickswitcher UI elements.\nWhen hidden, will only draw background images.", {false, true}, on_off,
+        appearanceItems.push_back(new MenuItem{ListItemType::Generic, LANG(SHOW_QUICKSWITCHER_UI), LANG(SHOW_QUICKSWITCHER_UI_DESC), {false, true}, on_off,
             []() -> std::any{ return CFG_getShowQuickswitcherUI(); },
             [](const std::any &value){ CFG_setShowQuickswitcherUI(std::any_cast<bool>(value)); },
             []() { CFG_setShowQuickswitcherUI(CFG_DEFAULT_SHOWQUICKWITCHERUI);}});
-        appearanceItems.push_back(new MenuItem{ListItemType::Generic, LANG(GAME_SWITCHER_CURTAIN_OPACITY), "Show/hide curtain overlay. Helps UI elements to \nstand out when using transparent backgrounds.", curtain_opacity_values, curtain_opacity_labels, 
+        appearanceItems.push_back(new MenuItem{ListItemType::Generic, LANG(GAME_SWITCHER_CURTAIN_OPACITY), LANG(SHOW_CURTAIN_OVERLAY_DESC), curtain_opacity_values, curtain_opacity_labels,
             []() -> std::any{ return CFG_getGameSwitcherCurtain(); },
             [](const std::any &value){ CFG_setGameSwitcherCurtain(std::any_cast<int>(value)); },
             []() { CFG_setGameSwitcherCurtain(CFG_DEFAULT_GAMESWITCHER_CURTAIN);}});
@@ -621,7 +640,7 @@ int main(int argc, char *argv[])
                 deviceInfo.getModel() == DeviceInfo::RGCubeXX ? DISPLAYCAL_PRESET_RGCUBEXX :
                 DISPLAYCAL_PRESET_DEFAULT);
             displayItems.push_back(
-                new MenuItem{ListItemType::Generic, LANG(WHITE_POINT_CORRECTION), "Corrects the display white point to better match the \nsRGB standard, at the expense of some peak brightness.", {false, true}, on_off, []() -> std::any
+                new MenuItem{ListItemType::Generic, LANG(WHITE_POINT_CORRECTION), LANG(CORRECTS_DISPLAY_WHITE_POINT_DESC), {false, true}, on_off, []() -> std::any
                 { return GetDisplayCalEnabled() != 0; }, [](const std::any &value)
                 { SetDisplayCalEnabled(std::any_cast<bool>(value)); },
                 [defaultDisplayCal]() { SetDisplayCalEnabled(defaultDisplayCal.enabled); }});
@@ -649,7 +668,7 @@ int main(int argc, char *argv[])
         std::vector<AbstractMenuItem*> systemItems = {
             new MenuItem{ListItemType::Generic, LANG(VOLUME), LANG(SPEAKER_VOLUME),
             {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20},
-            {"Muted", "5%","10%","15%","20%","25%","30%","35%","40%","45%","50%","55%","60%","65%","70%","75%","80%","85%","90%","95%","100%"},
+            {LANG(MUTED), "5%","10%","15%","20%","25%","30%","35%","40%","45%","50%","55%","60%","65%","70%","75%","80%","85%","90%","95%","100%"},
             []() -> std::any{ return GetVolume(); }, [](const std::any &value)
             { SetVolume(std::any_cast<int>(value)); },
             []() { SetVolume(SETTINGS_DEFAULT_VOLUME);}},
@@ -667,7 +686,7 @@ int main(int argc, char *argv[])
             []() { CFG_setHaptics(CFG_DEFAULT_HAPTICS);}},
             new MenuItem{ListItemType::Generic, LANG(DEFAULT_VIEW), LANG(THE_INITIAL_VIEW_TO_SHOW_ON_BOOT),
             {(int)SCREEN_GAMELIST, (int)SCREEN_GAMESWITCHER, (int)SCREEN_QUICKMENU},
-            {"Content List","Game Switcher","Quick Menu"},
+            {LANG(CONTENT_LIST),LANG(GAME_SWITCHER),LANG(QUICK_MENU)},
             []() -> std::any { return CFG_getDefaultView(); },
             [](const std::any &value){ CFG_setDefaultView(std::any_cast<int>(value)); },
             []() { CFG_setDefaultView(CFG_DEFAULT_VIEW);}},
@@ -681,7 +700,7 @@ int main(int argc, char *argv[])
             [](const std::any &value)
             { CFG_setShowClock(std::any_cast<bool>(value)); },
             []() { CFG_setShowClock(CFG_DEFAULT_SHOWCLOCK);}},
-            new MenuItem{ListItemType::Generic, LANG(SET_TIME_AND_DATE_AUTOMATICALLY), "Automatically adjust system time\nwith NTP (requires internet access)", {false, true}, on_off, []() -> std::any
+            new MenuItem{ListItemType::Generic, LANG(SET_TIME_AND_DATE_AUTOMATICALLY), LANG(AUTO_ADJUST_SYSTEM_TIME_DESC), {false, true}, on_off, []() -> std::any
             { return TIME_getNetworkTimeSync(); }, [](const std::any &value)
             { TIME_setNetworkTimeSync(std::any_cast<bool>(value)); },
             []() { TIME_setNetworkTimeSync(false);}}, // default from stock
@@ -689,19 +708,19 @@ int main(int argc, char *argv[])
             { return std::string(TIME_getCurrentTimezone()); }, [](const std::any &value)
             { TIME_setCurrentTimezone(std::any_cast<std::string>(value).c_str()); },
             []() { TIME_setCurrentTimezone("Asia/Shanghai");}}, // default from Stock
-            new MenuItem{ListItemType::Generic, LANG(SAVE_FORMAT), "The save format to use.\nMinUI: Game.gba.sav, Retroarch: Game.srm, Generic: Game.sav",
+            new MenuItem{ListItemType::Generic, LANG(SAVE_FORMAT), LANG(SAVE_FORMAT_DESC),
             {(int)SAVE_FORMAT_SAV, (int)SAVE_FORMAT_SRM, (int)SAVE_FORMAT_SRM_UNCOMPRESSED, (int)SAVE_FORMAT_GEN},
-            {"MinUI (default)", "Retroarch (compressed)", "Retroarch (uncompressed)", "Generic"}, []() -> std::any
+            {LANG(MINUI_DEFAULT), LANG(RETROARCH_COMPRESSED), LANG(RETROARCH_UNCOMPRESSED), LANG(GENERIC)}, []() -> std::any
             { return CFG_getSaveFormat(); }, [](const std::any &value)
             { CFG_setSaveFormat(std::any_cast<int>(value)); },
             []() { CFG_setSaveFormat(CFG_DEFAULT_SAVEFORMAT);}},
-            new MenuItem{ListItemType::Generic, LANG(SAVE_STATE_FORMAT), "The save state format to use. MinUI: Game.st0, \nRetroarch-ish: Game.state.0, Retroarch: Game.state0",
+            new MenuItem{ListItemType::Generic, LANG(SAVE_STATE_FORMAT), LANG(SAVE_STATE_FORMAT_DESC),
             {(int)STATE_FORMAT_SAV, (int)STATE_FORMAT_SRM_EXTRADOT, (int)STATE_FORMAT_SRM_UNCOMRESSED_EXTRADOT, (int)STATE_FORMAT_SRM, (int)STATE_FORMAT_SRM_UNCOMRESSED},
-            {"MinUI (default)", "Retroarch-ish (compressed)", "Retroarch-ish (uncompressed)", "Retroarch (compressed)", "Retroarch (uncompressed)"}, []() -> std::any
+            {LANG(MINUI_DEFAULT), LANG(RETROARCHISH_COMPRESSED), LANG(RETROARCHISH_UNCOMPRESSED), LANG(RETROARCH_COMPRESSED), LANG(RETROARCH_UNCOMPRESSED)}, []() -> std::any
             { return CFG_getStateFormat(); }, [](const std::any &value)
             { CFG_setStateFormat(std::any_cast<int>(value)); },
             []() { CFG_setStateFormat(CFG_DEFAULT_STATEFORMAT);}},
-            new MenuItem{ListItemType::Generic, LANG(USE_EXTRACTED_FILE_NAME), "Use the extracted file name instead of the archive name.\nOnly applies to cores that do not handle archives natively", {false, true}, on_off,
+            new MenuItem{ListItemType::Generic, LANG(USE_EXTRACTED_FILE_NAME), LANG(USE_EXTRACTED_FILENAME_DESC), {false, true}, on_off,
             []() -> std::any{ return CFG_getUseExtractedFileName(); },
             [](const std::any &value){ CFG_setUseExtractedFileName(std::any_cast<bool>(value)); },
             []() { CFG_setUseExtractedFileName(CFG_DEFAULT_EXTRACTEDFILENAME);}}
@@ -710,7 +729,7 @@ int main(int argc, char *argv[])
         if(deviceInfo.getPlatform() == DeviceInfo::tg5040)
         {
             systemItems.push_back(
-                new MenuItem{ListItemType::Generic, LANG(SAFE_POWEROFF), "Bypasses the stock shutdown procedure to avoid the \"limbo bug\".\nInstructs the PMIC directly to soft disconnect the battery.", {false, true}, on_off,
+                new MenuItem{ListItemType::Generic, LANG(SAFE_POWEROFF), LANG(BYPASS_STOCK_SHUTDOWN_DESC), {false, true}, on_off,
                 []() -> std::any { return CFG_getPowerOffProtection(); },
                 [](const std::any &value) { CFG_setPowerOffProtection(std::any_cast<bool>(value)); },
                 []() { CFG_setPowerOffProtection(CFG_DEFAULT_POWEROFFPROTECTION); }}
@@ -720,7 +739,7 @@ int main(int argc, char *argv[])
         if(deviceInfo.getPlatform() == DeviceInfo::tg5040 || deviceInfo.getPlatform() == DeviceInfo::h700)
         {
             systemItems.push_back(
-                new MenuItem{ListItemType::Generic, LANG(KEEP_AWAKE_OVER_USB), "Prevent screen-off and sleep while connected to a\ncomputer as a USB device (not just charging).", {false, true}, on_off,
+                new MenuItem{ListItemType::Generic, LANG(KEEP_AWAKE_OVER_USB), LANG(PREVENT_SLEEP_WHEN_USB_DESC), {false, true}, on_off,
                 []() -> std::any { return CFG_getKeepAwakeWhenUSB(); },
                 [](const std::any &value) { CFG_setKeepAwakeWhenUSB(std::any_cast<bool>(value)); },
                 []() { CFG_setKeepAwakeWhenUSB(CFG_DEFAULT_KEEPAWAKEWHENUSB); }}
@@ -730,8 +749,8 @@ int main(int argc, char *argv[])
         if(deviceInfo.hasActiveCooling())
         {
             systemItems.push_back(
-                new MenuItem{ListItemType::Generic, LANG(FAN_SPEED), "Select the fan speed percentage (Quiet/Normal/Performance or 0-100%)",
-                {-3,-2,-1,0,10,20,30,40,50,60,70,80,90,100}, {"Performance",LANG(NORMAL),"Quiet","0%","10%","20%","30%","40%","50%","60%","70%","80%","90%","100%"},
+                new MenuItem{ListItemType::Generic, LANG(FAN_SPEED), LANG(FAN_SPEED_DESC),
+                {-3,-2,-1,0,10,20,30,40,50,60,70,80,90,100}, {LANG(PERFORMANCE),LANG(NORMAL),LANG(QUIET),"0%","10%","20%","30%","40%","50%","60%","70%","80%","90%","100%"},
                 []() -> std::any { return GetFanSpeed(); },
                 [](const std::any &value){ SetFanSpeed(std::any_cast<int>(value)); },
                 []() { SetFanSpeed(SETTINGS_DEFAULT_FAN_SPEED); }}
@@ -760,7 +779,7 @@ int main(int argc, char *argv[])
         {
             new MenuItem{ListItemType::Generic, LANG(VOLUME_WHEN_TOGGLED), LANG(SPEAKER_VOLUME_0_20),
             {(int)SETTINGS_DEFAULT_MUTE_NO_CHANGE, 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20},
-            {"Unchanged", "Muted", "5%","10%","15%","20%","25%","30%","35%","40%","45%","50%","55%","60%","65%","70%","75%","80%","85%","90%","95%","100%"},
+            {LANG(UNCHANGED), LANG(MUTED),"5%","10%","15%","20%","25%","30%","35%","40%","45%","50%","55%","60%","65%","70%","75%","80%","85%","90%","95%","100%"},
             []() -> std::any { return GetMutedVolume(); },
             [](const std::any &value) { SetMutedVolume(std::any_cast<int>(value)); },
             []() { SetMutedVolume(0); }},
@@ -770,7 +789,7 @@ int main(int argc, char *argv[])
             []() { CFG_setMuteLEDs(CFG_DEFAULT_MUTELEDS); }},
             new MenuItem{ListItemType::Generic, LANG(BRIGHTNESS_WHEN_TOGGLED), LANG(DISPLAY_BRIGHTNESS_0_TO_10),
             {(int)SETTINGS_DEFAULT_MUTE_NO_CHANGE, 0,1,2,3,4,5,6,7,8,9,10},
-            {"Unchanged","0","1","2","3","4","5","6","7","8","9","10"},
+            {LANG(UNCHANGED),"0","1","2","3","4","5","6","7","8","9","10"},
             []() -> std::any { return GetMutedBrightness(); }, [](const std::any &value)
             { SetMutedBrightness(std::any_cast<int>(value)); },
             []() { SetMutedBrightness(SETTINGS_DEFAULT_MUTE_NO_CHANGE);}},
@@ -782,7 +801,7 @@ int main(int argc, char *argv[])
                 muteItems.push_back(
                     new MenuItem{ListItemType::Generic, LANG(COLOR_TEMPERATURE_WHEN_TOGGLED), LANG(COLOR_TEMPERATURE_0_TO_40),
                     {(int)SETTINGS_DEFAULT_MUTE_NO_CHANGE, 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40},
-                    {"Unchanged","0","1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26","27","28","29","30","31","32","33","34","35","36","37","38","39","40"},
+                    {LANG(UNCHANGED),"0","1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26","27","28","29","30","31","32","33","34","35","36","37","38","39","40"},
                     []() -> std::any{ return GetMutedColortemp(); }, [](const std::any &value)
                     { SetMutedColortemp(std::any_cast<int>(value)); },
                     []() { SetMutedColortemp(SETTINGS_DEFAULT_MUTE_NO_CHANGE);}}
@@ -792,13 +811,13 @@ int main(int argc, char *argv[])
                 muteItems.insert(muteItems.end(), {
                     new MenuItem{ListItemType::Generic, LANG(CONTRAST_WHEN_TOGGLED), LANG(CONTRAST_ENHANCEMENT_4_TO_5),
                     {(int)SETTINGS_DEFAULT_MUTE_NO_CHANGE, -4,-3,-2,-1,0,1,2,3,4,5},
-                    {"Unchanged","-4","-3","-2","-1","0","1","2","3","4","5"},
+                    {LANG(UNCHANGED),"-4","-3","-2","-1","0","1","2","3","4","5"},
                     []() -> std::any  { return GetMutedContrast(); }, [](const std::any &value)
                     { SetMutedContrast(std::any_cast<int>(value)); },
                     []() { SetMutedContrast(SETTINGS_DEFAULT_MUTE_NO_CHANGE);}},
                     new MenuItem{ListItemType::Generic, LANG(SATURATION_WHEN_TOGGLED), LANG(SATURATION_ENHANCEMENT_5_TO_5),
                     {(int)SETTINGS_DEFAULT_MUTE_NO_CHANGE, -5,-4,-3,-2,-1,0,1,2,3,4,5},
-                    {"Unchanged","-5","-4","-3","-2","-1","0","1","2","3","4","5"},
+                    {LANG(UNCHANGED),"-5","-4","-3","-2","-1","0","1","2","3","4","5"},
                     []() -> std::any{ return GetMutedSaturation(); }, [](const std::any &value)
                     { SetMutedSaturation(std::any_cast<int>(value)); },
                     []() { SetMutedSaturation(SETTINGS_DEFAULT_MUTE_NO_CHANGE);}}}
@@ -808,7 +827,7 @@ int main(int argc, char *argv[])
                 muteItems.push_back(
                     new MenuItem{ListItemType::Generic, LANG(EXPOSURE_WHEN_TOGGLED), LANG(EXPOSURE_ENHANCEMENT_4_TO_5),
                     {(int)SETTINGS_DEFAULT_MUTE_NO_CHANGE, -4,-3,-2,-1,0,1,2,3,4,5},
-                    {"Unchanged","-4","-3","-2","-1","0","1","2","3","4","5"},
+                    {LANG(UNCHANGED),"-4","-3","-2","-1","0","1","2","3","4","5"},
                     []() -> std::any  { return GetMutedExposure(); }, [](const std::any &value)
                     { SetMutedExposure(std::any_cast<int>(value)); },
                     []() { SetMutedExposure(SETTINGS_DEFAULT_MUTE_NO_CHANGE);}}
@@ -853,7 +872,7 @@ int main(int argc, char *argv[])
 
         if(deviceInfo.hasMuteToggle() && !deviceInfo.hasAnalogSticks()){
             muteItems.push_back(
-                new MenuItem{ListItemType::Generic, LANG(DPAD_MODE_WHEN_TOGGLED), "Dpad: default. Joystick: Dpad exclusively acts as analog stick.\nBoth: Dpad and Joystick inputs at the same time.", {0, 1, 2}, {LANG(DPAD), LANG(JOYSTICK), LANG(BOTH)}, []() -> std::any
+                new MenuItem{ListItemType::Generic, LANG(DPAD_MODE_WHEN_TOGGLED), LANG(DPAD_MODE_DESC), {0, 1, 2}, {LANG(DPAD), LANG(JOYSTICK), LANG(BOTH)}, []() -> std::any
                 {
                     if(!GetMuteDisablesDpad() && !GetMuteEmulatesJoystick()) return 0;
                     if(GetMuteDisablesDpad() && GetMuteEmulatesJoystick()) return 1;
@@ -887,7 +906,7 @@ int main(int argc, char *argv[])
             []() -> std::any { return CFG_getNotifyScreenshot(); },
             [](const std::any &value) { CFG_setNotifyScreenshot(std::any_cast<bool>(value)); },
             []() { CFG_setNotifyScreenshot(CFG_DEFAULT_NOTIFY_SCREENSHOT);}},
-            new MenuItem{ListItemType::Generic, "Vol / Display Adjustments", "Show overlay for volume, brightness,\nand color temp adjustments", {false, true}, on_off,
+            new MenuItem{ListItemType::Generic, LANG(VOLUME_DISPLAY_ADJUSTMENTS), LANG(VOLUME_DISPLAY_ADJUSTMENTS_DESC), {false, true}, on_off,
             []() -> std::any { return CFG_getNotifyAdjustments(); },
             [](const std::any &value) { CFG_setNotifyAdjustments(std::any_cast<bool>(value)); },
             []() { CFG_setNotifyAdjustments(CFG_DEFAULT_NOTIFY_ADJUSTMENTS);}},
@@ -899,12 +918,12 @@ int main(int argc, char *argv[])
         });
 
         // RetroAchievements keyboard prompts
-        auto raUsernamePrompt = new KeyboardPrompt("Enter Username", [](AbstractMenuItem &item) -> InputReactionHint {
+        auto raUsernamePrompt = new KeyboardPrompt(LANG(ENTER_USERNAME), [](AbstractMenuItem &item) -> InputReactionHint {
             CFG_setRAUsername(item.getName().c_str());
             return Exit;
         });
 
-        auto raPasswordPrompt = new KeyboardPrompt("Enter Password", [](AbstractMenuItem &item) -> InputReactionHint {
+        auto raPasswordPrompt = new KeyboardPrompt(LANG(ENTER_PASSWORD), [](AbstractMenuItem &item) -> InputReactionHint {
             CFG_setRAPassword(item.getName().c_str());
             return Exit;
         });
@@ -918,7 +937,7 @@ int main(int argc, char *argv[])
             new TextInputMenuItem{LANG(USERNAME), LANG(RETROACHIEVEMENTS_USERNAME),
             []() -> std::any {
                 std::string username = CFG_getRAUsername();
-                return username.empty() ? std::string("(not set)") : username;
+                return username.empty() ? std::string(LANG(NOT_SET)) : username;
             },
             [raUsernamePrompt](AbstractMenuItem &item) -> InputReactionHint {
                 raUsernamePrompt->setInitialText(CFG_getRAUsername());
@@ -928,7 +947,7 @@ int main(int argc, char *argv[])
             new TextInputMenuItem{LANG(PASSWORD), LANG(RETROACHIEVEMENTS_PASSWORD),
             []() -> std::any {
                 std::string password = CFG_getRAPassword();
-                return password.empty() ? std::string("(not set)") : std::string("********");
+                return password.empty() ? std::string(LANG(NOT_SET)) : std::string("********");
             },
             [raPasswordPrompt](AbstractMenuItem &item) -> InputReactionHint {
                 raPasswordPrompt->setInitialText(CFG_getRAPassword());
@@ -941,11 +960,11 @@ int main(int argc, char *argv[])
                 const char* password = CFG_getRAPassword();
 
                 if (!username || strlen(username) == 0 || !password || strlen(password) == 0) {
-                    item.setDesc("Error: Username and password required");
+                    item.setDesc(LANG(ERROR_USERNAME_PASSWORD_REQUIRED));
                     return NoOp;
                 }
 
-                item.setDesc("Authenticating...");
+                item.setDesc(LANG(AUTHENTICATING));
 
                 RA_AuthResponse response;
                 RA_AuthResult result = RA_authenticateSync(username, password, &response);
@@ -953,12 +972,12 @@ int main(int argc, char *argv[])
                 if (result == RA_AUTH_SUCCESS) {
                     CFG_setRAToken(response.token);
                     CFG_setRAAuthenticated(true);
-                    std::string desc = "Authenticated as " + std::string(response.display_name);
+                    std::string desc = std::string(LANG(AUTHENTICATED_AS)) + std::string(response.display_name);
                     item.setDesc(desc);
                 } else {
                     CFG_setRAToken("");
                     CFG_setRAAuthenticated(false);
-                    std::string desc = "Error: " + std::string(response.error_message);
+                    std::string desc = std::string(LANG(ERROR_COLON)) + std::string(response.error_message);
                     item.setDesc(desc);
                 }
                 return NoOp;
@@ -966,9 +985,9 @@ int main(int argc, char *argv[])
             new StaticMenuItem{ListItemType::Generic, LANG(STATUS), LANG(AUTHENTICATION_STATUS),
             []() -> std::any {
                 if (CFG_getRAAuthenticated() && strlen(CFG_getRAToken()) > 0) {
-                    return std::string("Authenticated");
+                    return std::string(LANG(AUTHENTICATED));
                 }
-                return std::string("Not authenticated");
+                return std::string(LANG(NOT_AUTHENTICATED));
             }},
             // TODO: Hardcore mode hidden until feature is fully implemented and ready for the emulator approval process done by the RetroAchievements team
             // new MenuItem{ListItemType::Generic, LANG(HARDCORE_MODE), LANG(DISABLE_SAVE_STATES_AND_CHEATS_FOR_ACHIEVEMENTS), {false, true}, on_off,
@@ -979,7 +998,7 @@ int main(int argc, char *argv[])
             []() -> std::any { return CFG_getRAShowNotifications(); },
             [](const std::any &value) { CFG_setRAShowNotifications(std::any_cast<bool>(value)); },
             []() { CFG_setRAShowNotifications(CFG_DEFAULT_RA_SHOW_NOTIFICATIONS);}},
-            new MenuItem{ListItemType::Generic, "Show Challenge Indicators", "Show a trophy indicator while a challenge achievement is active", {false, true}, on_off,
+            new MenuItem{ListItemType::Generic, LANG(SHOW_CHALLENGE_INDICATORS), LANG(SHOW_CHALLENGE_INDICATORS_DESC), {false, true}, on_off,
             []() -> std::any { return CFG_getRAShowChallengeIndicators(); },
             [](const std::any &value) { CFG_setRAShowChallengeIndicators(std::any_cast<bool>(value)); },
             []() { CFG_setRAShowChallengeIndicators(CFG_DEFAULT_RA_SHOW_CHALLENGE_INDICATORS);}},
@@ -1004,25 +1023,25 @@ int main(int argc, char *argv[])
                     snprintf(buf, sizeof(buf), "%u pending \u2014 send to RA server", count);
                     return std::string(buf);
                 }
-                return std::string("No pending unlocks");
+                return std::string(LANG(NO_PENDING_UNLOCKS));
             }(),
             [](AbstractMenuItem &item) -> InputReactionHint {
                 // Check authentication
                 if (!CFG_getRAAuthenticated() || strlen(CFG_getRAToken()) == 0) {
-                    item.setDesc("Not authenticated");
+                    item.setDesc(LANG(NOT_AUTHENTICATED));
                     return NoOp;
                 }
 
                 // Check for pending unlocks
                 uint32_t pending = 0;
                 if (!RA_Sync_hasPendingUnlocks(&pending) || pending == 0) {
-                    item.setDesc("No pending unlocks");
+                    item.setDesc(LANG(NO_PENDING_UNLOCKS));
                     return NoOp;
                 }
 
                 // Show initial overlay with cancel hint
                 char msg[128];
-                snprintf(msg, sizeof(msg), "Syncing %u achievement%s...\n\n(0/%u)",
+                snprintf(msg, sizeof(msg), LANG(SYNCING_INITIAL),
                          pending, pending == 1 ? "" : "s", pending);
                 MenuList::showOverlay(msg, OverlayDismissMode::None);
 
@@ -1050,7 +1069,7 @@ int main(int argc, char *argv[])
                         [](uint32_t current, uint32_t total, bool success, void* userdata) {
                             auto* ctx = static_cast<ProgressCtx*>(userdata);
                             char buf[128];
-                            snprintf(buf, sizeof(buf), "Syncing achievements...\n\n(%u/%u)",
+                            snprintf(buf, sizeof(buf), LANG(SYNCING_PROGRESS),
                                      current, ctx->total);
                             {
                                 std::lock_guard<std::mutex> lock(*ctx->mutex);
@@ -1068,7 +1087,7 @@ int main(int argc, char *argv[])
 
                     if (PAD_justPressed(BTN_B)) {
                         SDL_AtomicSet(&cancel, 1);
-                        MenuList::showOverlay("Cancelling sync...", OverlayDismissMode::None);
+                        MenuList::showOverlay(LANG(CANCELLING_SYNC), OverlayDismissMode::None);
                     }
 
                     // Update overlay if progress changed
@@ -1091,21 +1110,21 @@ int main(int argc, char *argv[])
 
                 // Update button description with result
                 if (SDL_AtomicGet(&cancel) && sync_result.synced == 0) {
-                    item.setDesc("Sync cancelled");
+                    item.setDesc(LANG(SYNC_CANCELLED));
                 } else if (SDL_AtomicGet(&cancel) && sync_result.synced > 0) {
-                    snprintf(msg, sizeof(msg), "Cancelled: %u of %u synced",
+                    snprintf(msg, sizeof(msg), LANG(CANCELLED_PARTIAL),
                              sync_result.synced, sync_result.total);
                     item.setDesc(msg);
                 } else if (sync_result.failed > 0) {
-                    snprintf(msg, sizeof(msg), "Incomplete: %u synced, retry later",
+                    snprintf(msg, sizeof(msg), LANG(INCOMPLETE_SYNC),
                              sync_result.synced);
                     item.setDesc(msg);
                 } else if (sync_result.synced > 0) {
-                    snprintf(msg, sizeof(msg), "Synced %u achievement%s",
+                    snprintf(msg, sizeof(msg), LANG(SYNCED),
                              sync_result.synced, sync_result.synced == 1 ? "" : "s");
                     item.setDesc(msg);
                 } else {
-                    item.setDesc("No pending unlocks");
+                    item.setDesc(LANG(NO_PENDING_UNLOCKS));
                 }
 
                 return NoOp;
@@ -1123,13 +1142,10 @@ int main(int argc, char *argv[])
         // stock OS was modified in way that are known to cause issues
         std::string bbver = extractBusyBoxVersion(execCommand("cat --help"));
         if (bbver.empty())
-            bbver = "BusyBox version not found.";
+            bbver = LANG(BUSYBOX_VERSION_NOT_FOUND);
         else if(deviceInfo.getPlatform() == DeviceInfo::tg5040 && bbver.find(BUSYBOX_STOCK_VERSION) == std::string::npos)
             ctx.menu->showOverlay(
-                "Stock OS changes detected.\n"
-                "This may cause instability or issues.\n"
-                "If you experience problems, please consider\n"
-                "reverting to clean stock firmware.",
+                LANG(STOCK_OS_CHANGED_WARNING),
                 OverlayDismissMode::DismissOnA);
 
         auto aboutMenu = new MenuList(MenuItemType::Fixed, LANG(ABOUT),
@@ -1166,7 +1182,7 @@ int main(int argc, char *argv[])
 
         if(deviceInfo.hasMuteToggle())
             mainItems.push_back(new MenuItem{ListItemType::Generic, LANG(FN_SWITCH), LANG(FN_SWITCH_SETTINGS), {}, {}, nullptr, nullptr, DeferToSubmenu,
-                new MenuList(MenuItemType::Fixed, "FN Switch", muteItems)});
+                new MenuList(MenuItemType::Fixed, LANG(FN_SWITCH), muteItems)});
 
         if(buttonMenu)
             mainItems.push_back(new MenuItem{ListItemType::Generic, LANG(ASSIGNMENTS), LANG(CUSTOMIZE_BUTTON_ASSIGNMENTS), {}, {}, nullptr, nullptr, DeferToSubmenu, buttonMenu});
@@ -1181,7 +1197,7 @@ int main(int argc, char *argv[])
 
         mainItems.push_back(new MenuItem{ListItemType::Generic, LANG(ABOUT), "", {}, {}, nullptr, nullptr, DeferToSubmenu, aboutMenu});
 
-        ctx.menu = new MenuList(MenuItemType::List, "Main", mainItems);
+        ctx.menu = new MenuList(MenuItemType::List, LANG(MAIN), mainItems);
 
         SDL_Surface* bgbmp = IMG_Load(SDCARD_PATH "/bg.png");
         SDL_Surface* convertedbg = SDL_ConvertSurfaceFormat(bgbmp, SDL_PIXELFORMAT_RGB565, 0);
@@ -1247,7 +1263,7 @@ int main(int argc, char *argv[])
                 if (ctx.appManagesTitle)
                 {
                     char display_name[256];
-                    int text_width = GFX_truncateText(font.large, "Some title", display_name, max_width, SCALE1(BUTTON_PADDING * 2));
+                    int text_width = GFX_truncateText(font.large, LANG(SOME_TITLE), display_name, max_width, SCALE1(BUTTON_PADDING * 2));
                     max_width = MIN(max_width, text_width);
 
                     SDL_Surface *text;
@@ -1269,10 +1285,10 @@ int main(int argc, char *argv[])
                         GFX_blitHardwareHints(ctx.screen, ctx.show_setting);
                     else
                     {
-                        char *hints[] = {(char *)("MENU"), (char *)("SLEEP"), NULL};
+                        char *hints[] = {(char *)LANG(MENU_BTN), (char *)LANG(SLEEP_BTN), NULL};
                         GFX_blitButtonGroup(hints, 0, ctx.screen, 0);
                     }
-                    char *hints[] = {(char *)("B"), (char *)("BACK"), (char *)("A"), (char *)("OKAY"), NULL};
+                    char *hints[] = {(char *)("B"), (char *)LANG(BACK), (char *)("A"), (char *)LANG(OKAY), NULL};
                     GFX_blitButtonGroup(hints, 1, ctx.screen, 1);
                 }
 

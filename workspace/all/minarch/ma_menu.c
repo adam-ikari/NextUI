@@ -190,7 +190,7 @@ void Menu_init(void) {
 	// always sanitized/outer name, to keep main UI from having to inspect archives
 	sprintf(menu.slot_path, "%s/%s.txt", menu.minui_dir, game.name);
 	
-	if (simple_mode) menu.items[ITEM_OPTS] = "Reset";
+	if (simple_mode) menu.items[ITEM_OPTS] = LANG(RESET);
 	
 	if (game.m3u_path[0]) {
 		char* tmp;
@@ -408,9 +408,9 @@ static int OptionAchievements_showDetail(MenuList* list, int i) {
 			// Points (singular/plural) - use tiny font like other metadata
 			char points_str[32];
 			if (ach->points == 1) {
-				snprintf(points_str, sizeof(points_str), "1 point");
+				snprintf(points_str, sizeof(points_str), LANG(ACH_1_POINT));
 			} else {
-				snprintf(points_str, sizeof(points_str), "%u points", ach->points);
+				snprintf(points_str, sizeof(points_str), LANG(ACH_N_POINTS), ach->points);
 			}
 			SDL_Surface* points_text = TTF_RenderUTF8_Blended(font.tiny, points_str, COLOR_LIGHT_TEXT);
 			SDL_BlitSurface(points_text, NULL, screen, &(SDL_Rect){
@@ -423,7 +423,7 @@ static int OptionAchievements_showDetail(MenuList* list, int i) {
 			if (ach->unlocked && ach->unlock_time > 0) {
 				struct tm* tm_info = localtime(&ach->unlock_time);
 				char time_buf[64];
-				strftime(time_buf, sizeof(time_buf), "Unlocked %B %d %Y, %I:%M%p", tm_info);
+				strftime(time_buf, sizeof(time_buf), LANG(ACH_UNLOCKED_AT), tm_info);
 				SDL_Surface* time_text = TTF_RenderUTF8_Blended(font.tiny, time_buf, COLOR_LIGHT_TEXT);
 				SDL_BlitSurface(time_text, NULL, screen, &(SDL_Rect){
 					center_x - time_text->w / 2, content_y
@@ -461,7 +461,7 @@ static int OptionAchievements_showDetail(MenuList* list, int i) {
 			// Unlock rate/rarity (smaller font, gray)
 			if (ach->rarity > 0) {
 				char rarity_buf[32];
-				snprintf(rarity_buf, sizeof(rarity_buf), "%.2f%% unlock rate", ach->rarity);
+				snprintf(rarity_buf, sizeof(rarity_buf), LANG(ACH_UNLOCK_RATE), ach->rarity);
 				SDL_Surface* rarity_text = TTF_RenderUTF8_Blended(font.tiny, rarity_buf, COLOR_LIGHT_TEXT);
 				SDL_BlitSurface(rarity_text, NULL, screen, &(SDL_Rect){
 					center_x - rarity_text->w / 2, content_y
@@ -474,13 +474,13 @@ static int OptionAchievements_showDetail(MenuList* list, int i) {
 			const char* type_str = NULL;
 			switch (ach->type) {
 				case RC_CLIENT_ACHIEVEMENT_TYPE_MISSABLE:
-					type_str = "[Missable]";
+					type_str = LANG(ACH_TYPE_MISSABLE);
 					break;
 				case RC_CLIENT_ACHIEVEMENT_TYPE_PROGRESSION:
-					type_str = "[Progression]";
+					type_str = LANG(ACH_TYPE_PROGRESSION);
 					break;
 				case RC_CLIENT_ACHIEVEMENT_TYPE_WIN:
-					type_str = "[Win Condition]";
+					type_str = LANG(ACH_TYPE_WIN_CONDITION);
 					break;
 				default:
 					break;
@@ -529,7 +529,7 @@ static int OptionAchievements_showDetail(MenuList* list, int i) {
 
 static int OptionAchievements_openMenu(MenuList* list, int i) {
 	if (!RA_isGameLoaded()) {
-		Menu_message("No achievements found for this game.\n\nThis ROM may need a compatibility patch\nor may not be a supported version.\n\nVisit retroachievements.org to check\nsupported game files.", (char*[]){"B",LANG(BACK), NULL});
+		Menu_message(LANG(ACH_NOT_FOUND_DESC), (char*[]){"B",LANG(BACK), NULL});
 		return MENU_CALLBACK_NOP;
 	}
 
@@ -537,7 +537,7 @@ static int OptionAchievements_openMenu(MenuList* list, int i) {
 	RA_getAchievementSummary(&unlocked, &total);
 
 	if (total == 0) {
-		Menu_message("No achievements available for this game.\n\nThis game may not have achievements yet.\n\nVisit retroachievements.org for details.", (char*[]){"B",LANG(BACK), NULL});
+		Menu_message(LANG(ACH_NOT_AVAILABLE_DESC), (char*[]){"B",LANG(BACK), NULL});
 		return MENU_CALLBACK_NOP;
 	}
 
@@ -755,7 +755,7 @@ static int OptionAchievements_openMenu(MenuList* list, int i) {
 
 			// Status text at top, aligned with hardware pill (not part of centered content)
 			char status_text[64];
-			snprintf(status_text, sizeof(status_text), "%u/%u unlocked", unlocked, total);
+			snprintf(status_text, sizeof(status_text), LANG(ACH_UNLOCKED_COUNT), unlocked, total);
 			SDL_Surface* status_surface = TTF_RenderUTF8_Blended(font.tiny, status_text, COLOR_WHITE);
 			SDL_BlitSurface(status_surface, NULL, screen, &(SDL_Rect){
 				(screen->w - status_surface->w) / 2,
@@ -973,16 +973,22 @@ static int save_changes_index = 7;
 
 // Update options menu visibility based on RA enable state
 static void Options_updateVisibility(void) {
+	options_menu.items[0].name = LANG(FRONTEND);
+	options_menu.items[1].name = LANG(EMULATOR);
+	options_menu.items[2].name = LANG(SHADERS);
+	options_menu.items[3].name = LANG(CHEATS);
+	options_menu.items[4].name = LANG(CONTROLS);
+	options_menu.items[5].name = LANG(SHORTCUTS);
 	if (CFG_getRAEnable()) {
 		// RA enabled: show Achievements at index 6, Save Changes at index 7
-		options_menu.items[6].name = "Achievements";
+		options_menu.items[6].name = LANG(ACHIEVEMENTS);
 		options_menu.items[6].on_confirm = OptionAchievements_openMenu;
-		options_menu.items[7].name = "Save Changes";
+		options_menu.items[7].name = LANG(SAVE_CHANGES);
 		options_menu.items[7].on_confirm = OptionSaveChanges_openMenu;
 		save_changes_index = 7;
 	} else {
 		// RA disabled: hide Achievements, move Save Changes to index 6
-		options_menu.items[6].name = "Save Changes";
+		options_menu.items[6].name = LANG(SAVE_CHANGES);
 		options_menu.items[6].desc = NULL;
 		options_menu.items[6].on_confirm = OptionSaveChanges_openMenu;
 		options_menu.items[7].name = NULL;
@@ -1004,7 +1010,7 @@ void OptionAchievements_updateDesc(void) {
 		uint32_t unlocked, total;
 		RA_getAchievementSummary(&unlocked, &total);
 		if (total > 0) {
-			snprintf(ach_desc_buffer, sizeof(ach_desc_buffer), "%u / %u unlocked", unlocked, total);
+			snprintf(ach_desc_buffer, sizeof(ach_desc_buffer), LANG(ACH_UNLOCKED_COUNT), unlocked, total);
 			options_menu.items[6].desc = ach_desc_buffer;
 			return;
 		}
@@ -1232,7 +1238,7 @@ int Menu_options(MenuList* list) {
 				for (int i=0; i<count; i++) {
 					MenuItem* item = &items[i];
 					int w = 0;
-					TTF_SizeUTF8(font.small, item->name, &w, NULL);
+					TTF_SizeUTF8(font.large, item->name, &w, NULL);
 					w += SCALE1(OPTION_PADDING*2);
 					if (w>mw) mw = w;
 				}
@@ -1250,7 +1256,7 @@ int Menu_options(MenuList* list) {
 				if (j==selected_row) {
 					// move out of conditional if centering
 					int w = 0;
-					TTF_SizeUTF8(font.small, item->name, &w, NULL);
+					TTF_SizeUTF8(font.large, item->name, &w, NULL);
 					w += SCALE1(OPTION_PADDING*2);
 					
 					GFX_blitPillDark(ASSET_BUTTON, screen, &(SDL_Rect){
@@ -1263,7 +1269,7 @@ int Menu_options(MenuList* list) {
 					
 					if (item->desc) desc = item->desc;
 				}
-				text = TTF_RenderUTF8_Blended(font.small, item->name, text_color);
+				text = TTF_RenderUTF8_Blended(font.large, item->name, text_color);
 				SDL_BlitSurface(text, NULL, screen, &(SDL_Rect){
 					ox+SCALE1(OPTION_PADDING),
 					oy+SCALE1((j*BUTTON_SIZE)+1)
@@ -1310,7 +1316,7 @@ int Menu_options(MenuList* list) {
 						while ( item->values && item->values[count]) count++;
 						if (item->value >= 0 && item->value < count) {
 							const char *str = item->values[item->value];
-							text = TTF_RenderUTF8_Blended(font.tiny, str ? str : "none", str ? COLOR_WHITE : COLOR_GRAY); // always white
+							text = TTF_RenderUTF8_Blended(font.small, str ? str : "none", str ? COLOR_WHITE : COLOR_GRAY); // always white
 							if (text) {
 								SDL_BlitSurface(text, NULL, screen, &(SDL_Rect){
 									ox + mw - text->w - SCALE1(OPTION_PADDING),
@@ -1326,7 +1332,7 @@ int Menu_options(MenuList* list) {
 				if (j==selected_row) {
 					// white pill
 					int w = 0;
-					TTF_SizeUTF8(font.small, item->name, &w, NULL);
+					TTF_SizeUTF8(font.large, item->name, &w, NULL);
 					w += SCALE1(OPTION_PADDING*2);
 					GFX_blitPillDark(ASSET_BUTTON, screen, &(SDL_Rect){
 						ox,
@@ -1338,7 +1344,7 @@ int Menu_options(MenuList* list) {
 					
 					if (item->desc) desc = item->desc;
 				}
-				text = TTF_RenderUTF8_Blended(font.small, item->name, text_color);
+				text = TTF_RenderUTF8_Blended(font.large, item->name, text_color);
 				SDL_BlitSurface(text, NULL, screen, &(SDL_Rect){
 					ox+SCALE1(OPTION_PADDING),
 					oy+SCALE1((j*BUTTON_SIZE)+1)
@@ -1356,13 +1362,13 @@ int Menu_options(MenuList* list) {
 					int w = 0;
 					int lw = 0;
 					int rw = 0;
-					TTF_SizeUTF8(font.small, item->name, &lw, NULL);
+					TTF_SizeUTF8(font.large, item->name, &lw, NULL);
 					// every value list in an input table is the same
 					// so only calculate rw for the first item...
 					if (!mrw || type!=MENU_INPUT) {
 						if(item->values) {
 							for (int j=0; item->values[j]; j++) {
-								TTF_SizeUTF8(font.tiny, item->values[j], &rw, NULL);
+								TTF_SizeUTF8(font.small, item->values[j], &rw, NULL);
 								if (lw+rw>w) w = lw+rw;
 								if (rw>mrw) mrw = rw;
 							}
@@ -1397,7 +1403,7 @@ int Menu_options(MenuList* list) {
 					
 					// white pill
 					int w = 0;
-					TTF_SizeUTF8(font.small, item->name, &w, NULL);
+					TTF_SizeUTF8(font.large, item->name, &w, NULL);
 					w += SCALE1(OPTION_PADDING*2);
 					GFX_blitPillDark(ASSET_BUTTON, screen, &(SDL_Rect){
 						ox,
@@ -1409,7 +1415,7 @@ int Menu_options(MenuList* list) {
 					
 					if (item->desc) desc = item->desc;
 				}
-				text = TTF_RenderUTF8_Blended(font.small, item->name, text_color);
+				text = TTF_RenderUTF8_Blended(font.large, item->name, text_color);
 				SDL_BlitSurface(text, NULL, screen, &(SDL_Rect){
 					ox+SCALE1(OPTION_PADDING),
 					oy+SCALE1((j*BUTTON_SIZE)+1)
@@ -1423,7 +1429,7 @@ int Menu_options(MenuList* list) {
 					int count = 0;
 					while ( item->values && item->values[count]) count++;
 					if (item->value >= 0 && item->value < count) {
-						text = TTF_RenderUTF8_Blended(font.tiny, item->values[item->value], COLOR_WHITE); // always white
+						text = TTF_RenderUTF8_Blended(font.small, item->values[item->value], COLOR_WHITE); // always white
 						SDL_BlitSurface(text, NULL, screen, &(SDL_Rect){
 							ox + mw - text->w - SCALE1(OPTION_PADDING),
 							oy+SCALE1((j*BUTTON_SIZE)+3)
@@ -1447,8 +1453,8 @@ int Menu_options(MenuList* list) {
 		
 		if (desc) {
 			int w,h;
-			GFX_sizeText(font.tiny, desc, SCALE1(12), &w,&h);
-			GFX_blitText(font.tiny, desc, SCALE1(12), COLOR_WHITE, screen, &(SDL_Rect){
+			GFX_sizeText(font.small, desc, SCALE1(12), &w,&h);
+			GFX_blitText(font.small, desc, SCALE1(12), COLOR_WHITE, screen, &(SDL_Rect){
 				(screen->w - w) / 2,
 				screen->h - SCALE1(PADDING) - h,
 				w,h

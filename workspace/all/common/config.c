@@ -146,7 +146,8 @@ void CFG_init(FontLoad_callback_t cb, ColorSet_callback_t ccb)
 {
     CFG_defaults(&settings);
     settings.onFontChange = cb;
-    strcpy(settings.language, "en");
+    strcpy(settings.language, "zh");
+    LANG_set(LANG_ID_ZH);
     settings.onColorSet = ccb;
     bool fontLoaded = false;
 

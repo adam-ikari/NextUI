@@ -201,7 +201,7 @@ typedef struct
 #define TRANSITION_SNAPPY 1
 #define TRANSITION_COMFY  2
 
-#define CFG_DEFAULT_FONT_FILE "font1.ttf"  // Next
+#define CFG_DEFAULT_FONT_FILE "fusion-pixel-12px-monospaced-zh_hans.ttf"  // 像素字体，中英文一致
 #define CFG_DEFAULT_FONT_STYLE 0x01 // TTF_STYLE_BOLD (MinUI default)
 #define CFG_DEFAULT_COLOR1 0xffffffffU
 #define CFG_DEFAULT_COLOR2 0x9b2257ffU
@@ -287,7 +287,7 @@ void CFG_print(void);
 void CFG_get(const char *key, char * value);
 // void CFG_defaults(NextUISettings*);
 // The font filename to use as the UI font.
-// Built-in: "font1.ttf" (Next, default), "font2.ttf" (OG)
+// Built-in: default "fusion-pixel-12px-monospaced-zh_hans.ttf", "font1.ttf" (Next), "font2.ttf" (OG)
 // Custom fonts go in RES_PATH alongside built-in fonts.
 const char* CFG_getFontFile(void);
 void CFG_setFontFile(const char* filename);
