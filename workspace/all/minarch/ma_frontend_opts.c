@@ -217,10 +217,10 @@ int OptionEmulator_openMenu(MenuList* list, int index) {
 	}
 	else {
 		if (list->category) {
-			Menu_message("This category has no options.", (char*[]){ "B","BACK", NULL });
+			Menu_message((char*)LANG(THIS_CATEGORY_HAS_NO_OPTIONS), (char*[]){ "B",(char*)LANG(BACK), NULL });
 		}
 		else {
-			Menu_message("This core has no options.", (char*[]){ "B","BACK", NULL });
+			Menu_message((char*)LANG(THIS_CORE_HAS_NO_OPTIONS), (char*[]){ "B",(char*)LANG(BACK), NULL });
 		}
 	}
 
@@ -303,8 +303,8 @@ int OptionControls_openMenu(MenuList* list, int i) {
 
 		if (has_custom_controllers) {
 			MenuItem* item = &OptionControls_menu.items[k++];
-			item->name = "Controller";
-			item->desc = "Select the type of controller.";
+			item->name = (char*)LANG(CONTROLLER);
+			item->desc = (char*)LANG(SELECT_THE_TYPE_OF_CONTROLLER);
 			item->value = gamepad_type;
 			item->values = gamepad_labels;
 			item->on_change = OptionControls_optionChanged;
@@ -394,13 +394,14 @@ static MenuList OptionShortcuts_menu = {
 };
 char* getSaveDesc(void) {
 	switch (config.loaded) {
-		case CONFIG_NONE:		return "Using defaults."; break;
-		case CONFIG_CONSOLE:	return "Using console config."; break;
-		case CONFIG_GAME:		return "Using game config."; break;
+		case CONFIG_NONE:		return (char*)LANG(USING_DEFAULTS); break;
+		case CONFIG_CONSOLE:	return (char*)LANG(USING_CONSOLE_CONFIG); break;
+		case CONFIG_GAME:		return (char*)LANG(USING_GAME_CONFIG); break;
 	}
 	return NULL;
 }
 int OptionShortcuts_openMenu(MenuList* list, int i) {
+	OptionShortcuts_menu.desc = (char*)LANG(SHORTCUTS_DESC_FULL);
 	if (OptionShortcuts_menu.items==NULL) {
 		// TODO: where do I free this? I guess I don't :sweat_smile:
 		OptionShortcuts_menu.items = calloc(SHORTCUT_COUNT+1, sizeof(MenuItem));
@@ -433,22 +434,22 @@ static int OptionSaveChanges_onConfirm(MenuList* list, int i) {
 	switch (i) {
 		case 0: {
 			Config_write(CONFIG_WRITE_ALL);
-			message = "Saved for console.";
+			message = (char*)LANG(SAVED_FOR_CONSOLE);
 			break;
 		}
 		case 1: {
 			Config_write(CONFIG_WRITE_GAME);
-			message = "Saved for game.";
+			message = (char*)LANG(SAVED_FOR_GAME);
 			break;
 		}
 		default: {
 			Config_restore();
-			if (config.loaded) message = "Restored console defaults.";
-			else message = "Restored defaults.";
+			if (config.loaded) message = (char*)LANG(RESTORED_CONSOLE_DEFAULTS);
+			else message = (char*)LANG(RESTORED_DEFAULTS);
 			break;
 		}
 	}
-	Menu_message(message, (char*[]){ "A","OKAY", NULL });
+	Menu_message(message, (char*[]){ "A",(char*)LANG(OKAY), NULL });
 	OptionSaveChanges_updateDesc();
 	return MENU_CALLBACK_EXIT;
 }
@@ -463,6 +464,9 @@ static MenuList OptionSaveChanges_menu = {
 	}
 };
 int OptionSaveChanges_openMenu(MenuList* list, int i) {
+	OptionSaveChanges_menu.items[0].name = (char*)LANG(SAVE_FOR_CONSOLE);
+	OptionSaveChanges_menu.items[1].name = (char*)LANG(SAVE_FOR_GAME);
+	OptionSaveChanges_menu.items[2].name = (char*)LANG(RESTORE_DEFAULTS);
 	OptionSaveChanges_updateDesc();
 	OptionSaveChanges_menu.desc = getSaveDesc();
 	Menu_options(&OptionSaveChanges_menu);
@@ -481,7 +485,7 @@ static int OptionCheats_optionChanged(MenuList* list, int i) {
 	// Block enabling cheats in RetroAchievements hardcore mode
 	if (RA_isHardcoreModeActive() && item->value) {
 		LOG_info("Cheat enable blocked - hardcore mode active\n");
-		Notification_push(NOTIFICATION_ACHIEVEMENT, "Cheats disabled in Hardcore mode", NULL);
+		Notification_push(NOTIFICATION_ACHIEVEMENT, (char*)LANG(CHEATS_DISABLED_HARDCORE), NULL);
 		item->value = 0; // Revert the toggle
 		return MENU_CALLBACK_NOP;
 	}
@@ -555,11 +559,11 @@ int OptionCheats_openMenu(MenuList* list, int i) {
 		char cheats_path[CHEAT_MAX_LIST_LENGTH] = {0};
 
 		// prepend title with bounds checking
-		const char* title = "No cheat file loaded.\n\n";
-		size_t title_len = strlen(title);
+		int title_len = snprintf(cheats_path, sizeof(cheats_path), "%s\n\n", LANG(NO_CHEAT_FILE_LOADED));
+		if (title_len < 0) title_len = 0;
+		if ((size_t)title_len >= sizeof(cheats_path)) title_len = sizeof(cheats_path) - 1;
 
-		strcpy(cheats_path, title);  // Use strcpy for first string
-		size_t current_len = title_len;
+		size_t current_len = (size_t)title_len;
 
 		for (int i = 0; i < count && i < CHEAT_MAX_DISPLAY_PATHS; i++) {
 			char* p = basename(paths[i]);
@@ -647,7 +651,7 @@ static int OptionPragmas_openMenu(MenuList* list, int i) {
 	if (PragmasOptions_menu.items[0].name) {
 		Menu_options(&PragmasOptions_menu);
 	} else {
-		Menu_message("No extra settings found", (char*[]){"B", "BACK", NULL});
+		Menu_message((char*)LANG(NO_EXTRA_SETTINGS_FOUND), (char*[]){"B",(char*)LANG(BACK), NULL});
 	}
 
 	return MENU_CALLBACK_NOP;
@@ -693,7 +697,9 @@ int OptionShaders_openMenu(MenuList* list, int i) {
 
 	// Check if folder read failed or no files found
 	if (!filelist || filecount == 0) {
-		Menu_message("No shaders available\n/Shaders folder or shader files not found", (char*[]){"B", "BACK", NULL});
+		char shader_msg[128];
+		snprintf(shader_msg, sizeof(shader_msg), "%s\n%s", LANG(NO_SHADERS_AVAILABLE), LANG(SHADERS_FOLDER_NOT_FOUND));
+		Menu_message(shader_msg, (char*[]){"B",(char*)LANG(BACK), NULL});
 		return MENU_CALLBACK_NOP;
 	}
 
@@ -722,7 +728,9 @@ int OptionShaders_openMenu(MenuList* list, int i) {
 	if (ShaderOptions_menu.items[0].name) {
 		Menu_options(&ShaderOptions_menu);
 	} else {
-		Menu_message("No shaders available\n/Shaders folder or shader files not found", (char*[]){"B", "BACK", NULL});
+		char shader_msg[128];
+		snprintf(shader_msg, sizeof(shader_msg), "%s\n%s", LANG(NO_SHADERS_AVAILABLE), LANG(SHADERS_FOLDER_NOT_FOUND));
+		Menu_message(shader_msg, (char*[]){"B",(char*)LANG(BACK), NULL});
 	}
 
 	return MENU_CALLBACK_NOP;

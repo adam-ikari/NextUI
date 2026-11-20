@@ -402,7 +402,7 @@ static const LangEntry lang_entries[LANG_COUNT] = {
     LANG_E(LANG_SOME_TITLE, "Some title", "标题示例"),
     LANG_E(LANG_ACH_1_POINT, "1 point", "1 分"),
     LANG_E(LANG_ACH_N_POINTS, "%u points", "%u 分"),
-    LANG_E(LANG_ACH_UNLOCKED_AT, "Unlocked %B %d %Y, %I:%M%p", "解锁于 %Y-%m-%d %H:%M"),
+    LANG_E(LANG_ACH_UNLOCKED_AT, "Unlocked %Y-%m-%d %H:%M", "解锁于 %Y-%m-%d %H:%M"),
     LANG_E(LANG_ACH_UNLOCK_RATE, "%.2f%% unlock rate", "解锁率 %.2f%%"),
     LANG_E(LANG_ACH_TYPE_MISSABLE, "[Missable]", "[易错过]"),
     LANG_E(LANG_ACH_TYPE_PROGRESSION, "[Progression]", "[流程]"),
@@ -410,6 +410,7 @@ static const LangEntry lang_entries[LANG_COUNT] = {
     LANG_E(LANG_ACH_NOT_FOUND_DESC, "No achievements found for this game.\n\nThis ROM may need a compatibility patch\nor may not be a supported version.\n\nVisit retroachievements.org to check\nsupported game files.", "此游戏未找到成就。\n\n该 ROM 可能需要兼容性补丁,\n或版本不受支持。\n\n请访问 retroachievements.org\n查看支持的游戏文件。"),
     LANG_E(LANG_ACH_NOT_AVAILABLE_DESC, "No achievements available for this game.\n\nThis game may not have achievements yet.\n\nVisit retroachievements.org for details.", "此游戏暂无可用成就。\n\n该游戏可能尚未添加成就。\n\n详情请访问 retroachievements.org。"),
     LANG_E(LANG_ACH_UNLOCKED_COUNT, "%u / %u unlocked", "%u / %u 已解锁"),
+    LANG_E(LANG_SHORTCUTS_DESC_FULL, "Press A to set and X to clear.\nSupports single button and MENU+button.", "按 A 设置,按 X 清除。\n支持单键和 MENU+按键。"),
 };
 
 static LangId current_lang = LANG_ID_EN;

@@ -81,7 +81,7 @@ static const std::vector<std::any> colors = {
     0x221100U, 0x442200U, 0x663300U, 0x884400U, 0xAA5500U, 0xCC6600U, 0xFF8833U, 0xFF994DU, 0xFFAA66U, 0xFFBB80U, 0xFFCC99U, 0xFFDDB3U,
     0x000000U, 0x141414U, 0x282828U, 0x3C3C3CU, 0x505050U, 0x646464U, 0x8C8C8CU, 0xA0A0A0U, 0xB4B4B4U, 0xC8C8C8U, 0xDCDCDCU, 0xFFFFFFU};
 // all colors above but as strings
-static std::vector<std::string> color_strings = {
+static const std::vector<std::string> color_strings = {
     "0x000022", "0x000044", "0x000066", "0x000088", "0x0000AA", "0x0000CC", "0x1E2329", "0x3366FF", "0x4D7AFF", "0x6699FF", "0x80B3FF", "0x99CCFF", "0xB3D9FF",
     "0x002222", "0x004444", "0x006666", "0x008888", "0x00AAAA", "0x00CCCC", "0x33FFFF", "0x4DFFFF", "0x66FFFF", "0x80FFFF", "0x99FFFF", "0xB3FFFF",
     "0x002200", "0x004400", "0x006600", "0x008800", "0x00AA00", "0x00CC00", "0x33FF33", "0x4DFF4D", "0x66FF66", "0x80FF80", "0x99FF99", "0xB3FFB3",
@@ -141,7 +141,7 @@ static const std::vector<std::any>    screen_timeout_secs = {0U, 5U, 10U, 15U, 3
 static std::vector<std::string> screen_timeout_labels = {LANG(NEVER), "5s", "10s", "15s", "30s", "45s", "60s", "90s", "2m", "4m", "6m", "10m"};
 
 static const std::vector<std::any>    sleep_timeout_secs = {5U, 10U, 15U, 30U, 45U, 60U, 90U, 120U, 240U, 360U, 600U};
-static std::vector<std::string> sleep_timeout_labels = {"5s", "10s", "15s", "30s", "45s", "60s", "90s", "2m", "4m", "6m", "10m"};
+static const std::vector<std::string> sleep_timeout_labels = {"5s", "10s", "15s", "30s", "45s", "60s", "90s", "2m", "4m", "6m", "10m"};
 
 static std::vector<std::string> on_off = {LANG(OFF), LANG(ON)};
 
@@ -430,7 +430,6 @@ int main(int argc, char *argv[])
         PLAT_getOsVersionInfo(version, 128);
         LOG_info("This is stock OS version %s\n", version);
         InitSettings();
-        refreshLocalizedLabels();
 
         PWR_setCPUSpeed(CPU_SPEED_AUTO);
 
@@ -438,6 +437,7 @@ int main(int argc, char *argv[])
         ctx.dirty = 1;
         ctx.show_setting = 0;
         ctx.screen = GFX_init(MODE_MAIN);
+        refreshLocalizedLabels();
         PAD_init();
         PWR_init();
         TIME_init();
