@@ -348,7 +348,9 @@ void PLAT_overrideMute(int mute) {
 char* PLAT_getModel(void) {
 	char* model = getenv("TRIMUI_MODEL");
 	if (model) return model;
-	return "Trimui Smart Pro S";
+	// tg5050 covers Brick and Brick Pro, which cannot be told apart when
+	// TRIMUI_MODEL is absent; default to the platform's main device.
+	return "Trimui Brick";
 }
 
 void PLAT_getOsVersionInfo(char* output_str, size_t max_len)
@@ -374,12 +376,13 @@ ConnectionStrength PLAT_connectionStrength(void) {
 		return SIGNAL_STRENGTH_LOW;
 }
 
+// This platform's LED config uses three slots; MAX_LIGHTS is only the shared
+// compile-time ceiling. Keep the count and config parsing in sync so the
+// zeroed fourth slot is never handed to the brightness setters.
+#define TG5050_NUM_LEDS 3
+
 int PLAT_getNumLeds(void) {
-	// MAX_LIGHTS is 4 but PLAT_initDefaultLeds() below only fills 3. The
-	// spare slot is a zeroed global, and a zeroed slot passes the
-	// filename != "f2" test in PLAT_setLedBrightness and writes brightness 0
-	// to the global max_scale, killing every LED.
-	return 3;
+	return TG5050_NUM_LEDS;
 }
 
 void PLAT_initDefaultLeds() {
@@ -447,7 +450,7 @@ void PLAT_initLeds(LightSettings *lights)
 				if (sscanf(line, "[%49[^]]]", light_name) == 1)
 				{
 					current_light++;
-					if (current_light < MAX_LIGHTS)
+					if (current_light < TG5050_NUM_LEDS)
 					{
 						strncpy(lights[current_light].name, light_name, 255 - 1);
 						lights[current_light].name[255 - 1] = '\0'; // Ensure null-termination
@@ -455,12 +458,12 @@ void PLAT_initLeds(LightSettings *lights)
 					}
 					else
 					{
-						LOG_info("Maximum number of lights (%d) exceeded. Ignoring further sections.\n", MAX_LIGHTS);
+						LOG_info("Maximum number of lights (%d) exceeded. Ignoring further sections.\n", TG5050_NUM_LEDS);
 						current_light = -1; // Reset if max_lights exceeded
 					}
 				}
 			}
-			else if (current_light >= 0 && current_light < MAX_LIGHTS)
+			else if (current_light >= 0 && current_light < TG5050_NUM_LEDS)
 			{
 				int temp_value;
 				uint32_t temp_color;
@@ -522,7 +525,7 @@ void PLAT_setLedInbrightness(LightSettings *led)
     FILE *file;
     // first set brightness
 	snprintf(filepath, sizeof(filepath), LED_PATH1);
-	if (strcmp(led->filename, "f2") != 0) {
+	if (led->filename[0] && strcmp(led->filename, "f2") != 0) {
 		// do nothhing for f2
 		file = fopen(filepath, "w");
 		if (file != NULL)
@@ -538,7 +541,7 @@ void PLAT_setLedBrightness(LightSettings *led)
     FILE *file;
     // first set brightness
 	snprintf(filepath, sizeof(filepath), "/sys/class/led_anim/max_scale");
-	if (strcmp(led->filename, "f2") != 0) {
+	if (led->filename[0] && strcmp(led->filename, "f2") != 0) {
 		// do nothhing for f2
 		file = fopen(filepath, "w");
 		if (file != NULL)
