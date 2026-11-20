@@ -834,6 +834,12 @@ int PLAT_pickSampleRate(int requested, int max) {
 	return MIN(requested, max);
 }
 
+int PLAT_audioIsBitPerfect(int requested) {
+	if(PLAT_bluetoothConnected())
+		return 0;
+	return 1;
+}
+
 void PLAT_overrideMute(int mute) {
 	system(mute ? "amixer -q sset 'SPK' off" : "amixer -q sset 'SPK' on");
 }
