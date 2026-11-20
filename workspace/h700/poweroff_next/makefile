@@ -19,7 +19,7 @@ include ../platform/makefile.env
 ###########################################################
 
 INCDIR = -I. -I../../all/common -I../platform
-SOURCE = poweroff_next.c ../../all/common/utils.c ../../all/common/config.c
+SOURCE = poweroff_next.c ../../all/common/utils.c ../../all/common/lang.c ../../all/common/config.c
 
 CC = $(CROSS_COMPILE)gcc
 # Override CFLAGS and LDFLAGS to not include SDL2 dependencies
