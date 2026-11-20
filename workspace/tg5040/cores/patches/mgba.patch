@@ -13,7 +13,7 @@ diff --git forkSrcPrefix/src/platform/libretro/libretro-audio.h forkDstPrefix/sr
 diff --git forkSrcPrefix/src/gba/audio.c forkDstPrefix/src/gba/audio.c
 --- forkSrcPrefix/src/gba/audio.c
 +++ forkDstPrefix/src/gba/audio.c
-@@ -51,7 +51,7 @@ void GBAAudioInit(struct GBAAudio* audio, size_t samples) {
+@@ -51,6 +51,6 @@ void GBAAudioInit(struct GBAAudio* audio, size_t samples) {
  	audio->forceDisableChB = false;
  	audio->masterVolume = GBA_AUDIO_VOLUME_MAX;
 -	audio->sampleInterval = GBA_ARM7TDMI_FREQUENCY / 0x8000;
