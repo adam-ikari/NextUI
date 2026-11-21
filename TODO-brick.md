@@ -12,7 +12,7 @@
 影响：高（需硬断电、有丢档风险）
 证据：todo.txt:61-62「try to reproduce hung shutdowns and fix」、todo.txt:379-381「while (1) pause(); prevents shutdown on some platforms」；workspace/tg5050/platform/platform.c PLAT_powerOff 固定 sleep(2)
 规模：中
-备注：需先稳定复现。
+备注：2026-11-21 审查结论：未发现可安全修复的 bug。tg5050 的 PLAT_powerOff 与 tg5040 逐字一致，原生 poweroff 与 tg5040/h700 的差异属平台启动链设计而非漏补；api.c 的 killall -STOP→-TERM 修复已包含。真因需硬件复现与日志（stock poweroff / SD sync 阻塞 / framebuffer 写入），不做推测性改动。
 
 ### 3. Deep sleep 失败回退与 overheat 规避不稳
 影响：高（README 称 deep sleep 是 Brick 过热 bug 的解法）
@@ -36,7 +36,7 @@
 影响：中（PS1/高分辨率核心掉帧）
 证据：todo.txt:207-220「this might be a bottleneck ... not a single BASE or EXTRA core requests 8888」；todo.txt:222-228 SDL_UnlockTexture 阻塞 3-11ms
 规模：中
-备注：无。
+备注：2026-11-21 审查结论：已过期，无需改。上游在提交 568d8318/c8d35d3a 已把 Lock/Unlock 切成 SDL_UpdateTexture（tg5050 初始提交 89158fe5 即用 UpdateTexture）；当前无 Lock/Unlock 调用点，不存在 8888 往返。核心帧走 GL 上传（generic_video.c glTexSubImage2D），继续优化需真机剖析颜色转换与上传耗时，改共享文件只有风险无收益。
 
 ### 7. Ambient LED 分区与物理灯数错位，Brick 4 区 / Pro 5 区未完整支持
 影响：中低
