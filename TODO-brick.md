@@ -40,9 +40,9 @@
 
 ### 7. Ambient LED 分区与物理灯数错位，Brick 4 区 / Pro 5 区未完整支持
 影响：中低
-证据：workspace/all/common/api.c:727-753 Brick 布局按 count 剪裁；workspace/tg5050/platform/platform.c PLAT_getNumLeds 当前返回 3
+证据：workspace/all/common/api.c:727-753 Brick 布局按 count 剪裁（共享代码）；skeleton/BOOT/common/updater:21-25 型号映射（TG3040/4040→tg5040，TG5050→Smart Pro S）；Brick/Pro 的 4/5 区实现见 workspace/tg5040/platform/platform.c 与 ledsettings_brick*.txt（commit 07194642）
 规模：中
-备注：2026-11-20 已修零值槽全灭 bug 并对齐 3 槽；完整支持需 DEVICE 型号检测并提高共享 MAX_LIGHTS。
+备注：2026-11-21 审查结论：前提错配，不做改动。仓库铁证 `skeleton/BOOT/common/updater:21-25` 明确 TG3040/TG4040→tg5040（Brick/Brick Pro）、TG5050→Smart Pro S，即 tg5050 实为 Smart Pro S（3 区），无 4/5 区硬件证据；Brick(4 区)/BrickPro(5 区) 的完整 LED 支持早已在 tg5040 实现（commit 07194642，含 is_brick/is_brickpro 检测、4/5/3 计数、per-zone sysfs 节点）。TODO 原文让 tg5050 支持 4/5 区是平台归属错误。唯一潜在缺口是 `api.c:727-753` 的 ambient 从不写索引 4（Pro 的 rear 区），但设计意图不明、无 git 铁证、需真机确认，不做推测性修改。
 
 ### 8. 设备识别/耳机与 USB 状态缺失，休眠超时默认值与文档不符
 影响：中低
