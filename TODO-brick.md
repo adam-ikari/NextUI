@@ -4,9 +4,9 @@
 
 ### 1. 渲染上下文初始化慢，冷启动多耗约 300ms
 影响：高（每次开机必现）
-证据：todo.txt:56-60「just getting the rendering context going takes ~500ms versus ~200ms on other devices」；brain/stack.md:39；workspace/tg5050/install/boot.sh 与 paks/MinUI.pak/launch.sh 有 /tmp/nextui_boottime 计时打点
+证据：todo.txt:56-60 与 brain/stack.md:39 的 ~500ms vs ~200ms 观测实为 tg5040（Smart Pro），非 tg5050；workspace/tg5050/install/boot.sh 与 paks/MinUI.pak/launch.sh 的 /tmp/nextui_boottime 打点均不覆盖渲染初始化（nextui.elf 内部）。
 规模：大
-备注：上游曾试自编译 SDL2 无改善。
+备注：2026-11-21 审查结论：需真机计时剖析。渲染初始化（generic_video.c:605-709 PLAT_initVideo）全平台共享，tg5050 无多余步骤；源码已有被注释的 main_begin/graphics init 计时（nextui.c:2251-2252,2262），取消注释并在 SDL_CreateWindow/Renderer/GL_CreateContext/纹理创建前后加 SDL_GetTicks 日志即可得到 tg5050 实际耗时。上游自编译 SDL2 无改善是 tg5040 结论，不可外推。
 
 ### 2. 关机/挂起偶发卡死
 影响：高（需硬断电、有丢档风险）
@@ -30,7 +30,7 @@
 影响：中
 证据：todo.txt:164-175「400 SAMPLES fix isn't a true fix, it just minimizes the side effect」、todo.txt:274-281；workspace/tg5050/platform/platform.c:318-343 非原生采样率统一回退 48000
 规模：中-大
-备注：无。
+备注：2026-11-21 审查结论：需真机复现，代码层无安全修复。400 SAMPLES 方案作者自否为真修复（todo.txt:166）且上游已删除（077285f5）；当前已含 8 帧 ring buffer、动态速率调节、填充阈值暂停；SND_resetAudio 每次完整重建音频状态，采样率回退与 tg5040 一致，无"切换后未 apply"的 bug。下一步需 Brick 真机开 show_debug 记录 buffer_free/ratio/buffer_ms 与爆音时刻的相关性。
 
 ### 6. 8888→565→8888 转换与 CPU→GPU 纹理拷贝开销
 影响：中（PS1/高分辨率核心掉帧）
