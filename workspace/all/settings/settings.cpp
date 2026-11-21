@@ -389,9 +389,6 @@ namespace {
         }
 
         bool hasDisplayCal() const {
-            // Brick/Brick Pro build against tg5050 libmsettings, which has no
-            // /dev/disp and no-ops all display calibration calls.
-            if (m_model == Brick || m_model == BrickPro) return false;
             return m_platform == tg5040 || m_platform == h700;
         }
 

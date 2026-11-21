@@ -375,9 +375,7 @@ void PLAT_overrideMute(int mute) {
 char* PLAT_getModel(void) {
 	char* model = getenv("TRIMUI_MODEL");
 	if (model) return model;
-	// tg5050 covers Brick and Brick Pro, which cannot be told apart when
-	// TRIMUI_MODEL is absent; default to the platform's main device.
-	return "Trimui Brick";
+	return "Trimui Smart Pro S";
 }
 
 void PLAT_getOsVersionInfo(char* output_str, size_t max_len)

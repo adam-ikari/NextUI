@@ -18,13 +18,13 @@
 影响：高（README 称 deep sleep 是 Brick 过热 bug 的解法）
 证据：README.md:77,117-121；workspace/all/common/api.c:4443-4471（超时后失败直接 poweroff）、:4504-4516（依赖 $BIN_PATH/suspend）；skeleton/SYSTEM/tg5050/bin/suspend echo mem 重试 5 次
 规模：中
-备注：2026-11-21 已修 suspend 脚本的 false-negative retval 防护（补回 tg5040 同款 time_asleep>5 逻辑，避免唤醒后立即再次挂起或被误判失败关机）；overheat 规避本身仍依赖硬件验证。
+备注：2026-11-21 已修 suspend 脚本的 false-negative retval 防护（从 tg5040 移植 time_asleep>5 逻辑，避免唤醒后立即再次挂起或被误判失败关机；来源 commit 4d5fdd12）；overheat 规避本身仍依赖硬件验证。
 
 ### 4. 显示校准数据在 tg5050 空转
 影响：中（色准；BrickPro 预设标注 TODO）
 证据：workspace/all/common/displaycal.h:23-30；workspace/tg5050/libmsettings/msettings.c:117-120 默认禁用、:263 强制 displaycal_enabled=0、:284-286 applyDisplayCalSettings 空实现、:474-477 setter 忽略入参
 规模：小-中
-备注：2026-11-21 已修复：settings.cpp 的 hasDisplayCal() 现已对 Brick/BrickPro 型号返回 false，隐藏无用的白点校正菜单；底层空实现保持不变。
+备注：2026-11-21 审查结论：无需改，曾做的 hasDisplayCal() 型号判断已在评审后回退。前提错配——Brick/BrickPro 归属 tg5040（updater:21-25），其 libmsettings 有完整 applyDisplayCalSettings() 与 displaycal.h 实测预设，校准菜单本就有效；真正空实现的 tg5050(Smart Pro S) 因 m_platform==tg5050 原本就不满足 `==tg5040||h700`，已自动隐藏。给 Brick/BrickPro 加 false 判断反而隐藏了有效功能（功能回退），故撤销，恢复 base 实现。
 
 ### 5. 音频 underrun、爆音与核心切换后状态未恢复
 影响：中
@@ -46,8 +46,8 @@
 
 ### 8. 设备识别/耳机与 USB 状态缺失，休眠超时默认值与文档不符
 影响：中低
-证据：workspace/tg5050/install/boot.sh:13,38 依赖 MainUI 字符串与 DEVICE；workspace/tg5050/platform/platform.c PLAT_getModel 默认值已改为 Trimui Brick、PLAT_isUSBConnected 已实现（读 /sys/class/udc/*/state）；todo.txt:64-66 建议改用 /proc/device-tree/model、todo.txt:412「can't detect headphone state at boot?」；workspace/all/common/config.h:233 默认 120s（2026-11-21 由 30s 修正）与 README.md:121「After two minutes」一致
+证据：workspace/tg5050/install/boot.sh:13,38 依赖 MainUI 字符串与 DEVICE；workspace/tg5050/platform/platform.c PLAT_isUSBConnected 已实现（读 /sys/class/udc/*/state），PLAT_getModel 默认值经评审恢复为正确的 "Trimui Smart Pro S"（tg5050=Smart Pro S，updater:24-25）；todo.txt:64-66 建议改用 /proc/device-tree/model、todo.txt:412「can't detect headphone state at boot?」；workspace/all/common/config.h:233 默认 120s（对齐 README 两分钟语义）
 规模：小-中
-备注：2026-11-21 已修 PLAT_getModel 默认值、PLAT_isUSBConnected（/sys/class/udc/*/state）与休眠超时默认值（config.h 30s→120s，恢复 README 两分钟语义）；仅剩耳机检测因硬件限制未做。
+备注：2026-11-21 已修 PLAT_isUSBConnected（/sys/class/udc/*/state）与休眠超时默认值（config.h 30s→120s，对齐 README 两分钟语义）；PLAT_getModel 默认值曾误改为 Trimui Brick、评审后已恢复 base 的 Trimui Smart Pro S（tg5050 实为 Smart Pro S）；仅剩耳机检测因硬件限制未做。
 
 每项实施前需重新验证证据中的行号，代码可能已变。
