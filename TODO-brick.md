@@ -24,7 +24,7 @@
 影响：中（色准；BrickPro 预设标注 TODO）
 证据：workspace/all/common/displaycal.h:23-30；workspace/tg5050/libmsettings/msettings.c:117-120 默认禁用、:263 强制 displaycal_enabled=0、:284-286 applyDisplayCalSettings 空实现、:474-477 setter 忽略入参
 规模：小-中
-备注：需先确认 /dev/disp 是否支持；不支持则隐藏 UI 或改说明。
+备注：2026-11-21 已修复：settings.cpp 的 hasDisplayCal() 现已对 Brick/BrickPro 型号返回 false，隐藏无用的白点校正菜单；底层空实现保持不变。
 
 ### 5. 音频 underrun、爆音与核心切换后状态未恢复
 影响：中
@@ -46,8 +46,8 @@
 
 ### 8. 设备识别/耳机与 USB 状态缺失，休眠超时默认值与文档不符
 影响：中低
-证据：workspace/tg5050/install/boot.sh:13,38 依赖 MainUI 字符串与 DEVICE；workspace/tg5050/platform/platform.c PLAT_getModel 默认值已改为 Trimui Brick、PLAT_isUSBConnected 未实现；todo.txt:64-66 建议改用 /proc/device-tree/model、todo.txt:412「can't detect headphone state at boot?」；workspace/all/common/config.h:233 默认 30s vs README.md:121「After two minutes」
+证据：workspace/tg5050/install/boot.sh:13,38 依赖 MainUI 字符串与 DEVICE；workspace/tg5050/platform/platform.c PLAT_getModel 默认值已改为 Trimui Brick、PLAT_isUSBConnected 已实现（读 /sys/class/udc/*/state）；todo.txt:64-66 建议改用 /proc/device-tree/model、todo.txt:412「can't detect headphone state at boot?」；workspace/all/common/config.h:233 默认 30s vs README.md:121「After two minutes」
 规模：小-中
-备注：PLAT_getModel 默认值 2026-11-20 已修，剩余 USB/耳机检测与超时默认值待定。
+备注：2026-11-21 已修 PLAT_getModel 默认值与 PLAT_isUSBConnected（读 /sys/class/udc/*/state）；剩余耳机检测（硬件限制）与超时默认值（共享 config.h，待定）未做。
 
 每项实施前需重新验证证据中的行号，代码可能已变。
