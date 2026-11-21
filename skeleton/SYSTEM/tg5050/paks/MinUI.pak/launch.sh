@@ -57,10 +57,6 @@ export IS_NEXT="yes"
 
 #######################################
 
-# taken from stock launch sequence
-sync
-echo 3 > /proc/sys/vm/drop_caches
-sync
 
 #5V enable
 # echo 335 > /sys/class/gpio/export
