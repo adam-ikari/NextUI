@@ -18,7 +18,7 @@
 影响：高（README 称 deep sleep 是 Brick 过热 bug 的解法）
 证据：README.md:77,117-121；workspace/all/common/api.c:4443-4471（超时后失败直接 poweroff）、:4504-4516（依赖 $BIN_PATH/suspend）；skeleton/SYSTEM/tg5050/bin/suspend echo mem 重试 5 次
 规模：中
-备注：suspend 脚本的 tg5040 遗留路径与蓝牙启动路径已在 2026-11-20 修正。
+备注：2026-11-21 已修 suspend 脚本的 false-negative retval 防护（补回 tg5040 同款 time_asleep>5 逻辑，避免唤醒后立即再次挂起或被误判失败关机）；overheat 规避本身仍依赖硬件验证。
 
 ### 4. 显示校准数据在 tg5050 空转
 影响：中（色准；BrickPro 预设标注 TODO）
@@ -46,8 +46,8 @@
 
 ### 8. 设备识别/耳机与 USB 状态缺失，休眠超时默认值与文档不符
 影响：中低
-证据：workspace/tg5050/install/boot.sh:13,38 依赖 MainUI 字符串与 DEVICE；workspace/tg5050/platform/platform.c PLAT_getModel 默认值已改为 Trimui Brick、PLAT_isUSBConnected 已实现（读 /sys/class/udc/*/state）；todo.txt:64-66 建议改用 /proc/device-tree/model、todo.txt:412「can't detect headphone state at boot?」；workspace/all/common/config.h:233 默认 30s vs README.md:121「After two minutes」
+证据：workspace/tg5050/install/boot.sh:13,38 依赖 MainUI 字符串与 DEVICE；workspace/tg5050/platform/platform.c PLAT_getModel 默认值已改为 Trimui Brick、PLAT_isUSBConnected 已实现（读 /sys/class/udc/*/state）；todo.txt:64-66 建议改用 /proc/device-tree/model、todo.txt:412「can't detect headphone state at boot?」；workspace/all/common/config.h:233 默认 120s（2026-11-21 由 30s 修正）与 README.md:121「After two minutes」一致
 规模：小-中
-备注：2026-11-21 已修 PLAT_getModel 默认值与 PLAT_isUSBConnected（读 /sys/class/udc/*/state）；剩余耳机检测（硬件限制）与超时默认值（共享 config.h，待定）未做。
+备注：2026-11-21 已修 PLAT_getModel 默认值、PLAT_isUSBConnected（/sys/class/udc/*/state）与休眠超时默认值（config.h 30s→120s，恢复 README 两分钟语义）；仅剩耳机检测因硬件限制未做。
 
 每项实施前需重新验证证据中的行号，代码可能已变。

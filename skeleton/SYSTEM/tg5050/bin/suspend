@@ -65,12 +65,26 @@ sleep_max_tries=5
 for i in $(seq 1 $sleep_max_tries); do
 	>&2 echo "Deep sleep attempt $i of $sleep_max_tries"
 
+	sleep_time=$(date +%s)
 	echo mem >/sys/power/state
 	sleep_retval=$?
 
 	>&2 echo "Deep sleep: kernel returned $sleep_retval"
 	if [ $sleep_retval -eq 0 ]; then
 	    break
+	fi
+
+	wake_time=$(date +%s)
+	time_asleep=$(($wake_time-$sleep_time))
+
+	# Workaround for a strange false negative case where
+	# the device sleeps properly but still returns non-zero.
+	# If unaddressed, the device would sleep again immediately
+	# after the user tried to wake it.
+	if [ $time_asleep -gt 5 ]; then
+		>&2 echo "Deep sleep: averting false negative retval - (sleep for $time_asleep secs)"
+		sleep_retval=0
+		break
 	fi
 
 	>&2 echo "Deep sleep failed: retrying in 3 seconds"
