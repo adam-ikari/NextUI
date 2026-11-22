@@ -13,6 +13,41 @@ sleep_retval=
 
 asound_state_dir=/tmp/asound-suspend
 
+# After a day in suspend, wake via RTC and power off instead of sleeping forever.
+# Save state already happened in Menu_beforeSleep() before we got here.
+RTC_ALARM_SECS=86400
+rtc_alarm_path=
+rtc_alarm_set=
+for candidate in /sys/class/rtc/*/wakealarm; do
+	if [ -w "$candidate" ]; then
+		rtc_alarm_path=$candidate
+		break
+	fi
+done
+
+set_rtc_alarm() {
+	[ -n "$rtc_alarm_path" ] || return 1
+	echo 0 > "$rtc_alarm_path" 2>/dev/null || return 1
+	target=$(($(date +%s) + RTC_ALARM_SECS))
+	echo "$target" > "$rtc_alarm_path" 2>/dev/null || return 1
+	rtc_alarm_set=1
+	>&2 echo "RTC wakealarm set for $target"
+}
+
+clear_rtc_alarm() {
+	[ -n "$rtc_alarm_path" ] || return 0
+	echo 0 > "$rtc_alarm_path" 2>/dev/null || true
+}
+
+# True if the RTC fired (alarm elapsed or already consumed) while suspended.
+rtc_alarm_fired() {
+	[ -n "$rtc_alarm_path" ] && [ -n "$rtc_alarm_set" ] || return 1
+	alarm=$(cat "$rtc_alarm_path" 2>/dev/null)
+	[ -z "$alarm" ] && return 0
+	[ "$alarm" -le "$(date +%s)" ] 2>/dev/null && return 0
+	return 1
+}
+
 before() {
 	>&2 echo "Preparing for suspend..."
 
@@ -35,10 +70,22 @@ before() {
 		>&2 echo "Stopping wpa_supplicant..."
 		/etc/wifi/wifi_init.sh stop || true
 	fi
+
+	set_rtc_alarm || true
 }
 
 after() {
 	>&2 echo "Resumed from suspend."
+
+	# If the RTC alarm fired after a day in suspend, power off instead of
+	# resuming. Game state was saved by Menu_beforeSleep() before suspend.
+	if rtc_alarm_fired; then
+		>&2 echo "RTC alarm fired after 24h suspend - powering off."
+		sync
+		poweroff_next 2>/dev/null || poweroff
+		exit 0
+	fi
+	clear_rtc_alarm
 
 	# Run post-resume hooks in background immediately after wake.
 	( "$SYSTEM_PATH/bin/run_hooks.sh" post-resume.d ) >/dev/null 2>&1 &
