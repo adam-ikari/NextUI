@@ -42,6 +42,19 @@ Menu::~Menu()
 
 InputReactionHint Menu::handleInput(int &dirty, int &quit)
 {
+    // Show a scanning hint on the main thread (overlay draws via GFX in this thread).
+    // Only the first scan is announced so background refreshes never block input.
+    if (scanning.load() && !overlayShown)
+    {
+        MenuList::showOverlay("Scanning...", OverlayDismissMode::DismissOnB);
+        overlayShown = true;
+    }
+    else if (!scanning.load() && overlayShown)
+    {
+        MenuList::hideOverlay();
+        overlayShown = false;
+    }
+
     auto ret = MenuList::handleInput(dirty, quit);
     if (selectionDirty)
     {
@@ -101,17 +114,30 @@ void Menu::updater()
         // TODO: pause when menu is not rendered
         if (WIFI_enabled())
         {
+            if (firstScan)
+                scanning.store(true);
+
             // scan for available networks and add a menu item for each
             WIFI_connection connection;
             if(WIFI_connectionInfo(&connection) < 0)
+            {
+                scanning.store(false);
+                std::this_thread::sleep_for(std::chrono::seconds(pollSecs));
                 continue; // try again in a bit
+            }
 
             // grab list and compare it to previous result
             // only relayout the menu if changes happended
             std::vector<WIFI_network> scanResults(SCAN_MAX_RESULTS);
             int cnt = WIFI_scan(scanResults.data(), SCAN_MAX_RESULTS);
             if(cnt < 0)
+            {
+                scanning.store(false);
+                std::this_thread::sleep_for(std::chrono::seconds(pollSecs));
                 continue; // try again in a bit
+            }
+            scanning.store(false);
+            firstScan = false;
 
             std::map<std::string, WIFI_network> scanSsids;
             for (int i = 0; i < cnt; i++)
@@ -191,6 +217,8 @@ void Menu::updater()
             layout_called = false;
             selectionDirty = true;
             pollSecs = 15;
+            firstScan = true;
+            scanning.store(false);
         }
 
         // reset selection scope (locks internally)

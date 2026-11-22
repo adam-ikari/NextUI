@@ -1,6 +1,7 @@
 #pragma once
 
 #include "menu.hpp"
+#include <atomic>
 #include <thread>
 
 namespace Wifi
@@ -17,6 +18,9 @@ namespace Wifi
         std::thread worker;
         bool quit = false;
         bool selectionDirty = false;
+        bool firstScan = true;
+        std::atomic<bool> scanning{false};
+        bool overlayShown = false;
 
     public:
         Menu(const int &globalQuit, int &globalDirty);

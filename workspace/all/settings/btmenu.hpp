@@ -1,6 +1,7 @@
 #pragma once
 
 #include "menu.hpp"
+#include <atomic>
 #include <thread>
 
 namespace Bluetooth
@@ -21,7 +22,11 @@ namespace Bluetooth
         std::thread worker;
         bool quit = false;
         bool selectionDirty = false;
-        
+        bool firstScan = true;
+        int scanAttempts = 0;
+        std::atomic<bool> scanning{false};
+        bool overlayShown = false;
+
         PairingAgent* pairingAgent = nullptr;
     public:
         Menu(const int &globalQuit, int &globalDirty);

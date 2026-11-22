@@ -62,6 +62,19 @@ Menu::~Menu()
 
 InputReactionHint Menu::handleInput(int &dirty, int &quit)
 {
+    // Show a scanning hint on the main thread (overlay draws via GFX in this thread).
+    // Only the first discovery pass is announced so refreshes never block input.
+    if (scanning.load() && !overlayShown)
+    {
+        MenuList::showOverlay("Scanning...", OverlayDismissMode::DismissOnB);
+        overlayShown = true;
+    }
+    else if (!scanning.load() && overlayShown)
+    {
+        MenuList::hideOverlay();
+        overlayShown = false;
+    }
+
     auto ret = MenuList::handleInput(dirty, quit);
     if (selectionDirty)
     {
@@ -138,6 +151,9 @@ void Menu::updater()
         // Scan
         if (BT_enabled())
         {
+            if (firstScan)
+                scanning.store(true);
+
             if(!BT_discovering())
                 BT_discovery(true);
 
@@ -154,6 +170,13 @@ void Menu::updater()
             int cnt = BT_availableDevices(sr.data(), SCAN_MAX_RESULTS);
             for (int i = 0; i < cnt; i++)
                 scanMap.emplace(sr[i].name, sr[i]);
+
+            // Keep the hint until devices appear or a few polls elapse.
+            if (firstScan && (cnt > 0 || ++scanAttempts >= 5))
+            {
+                scanning.store(false);
+                firstScan = false;
+            }
 
             // dont repopulate if any submenu is open
             bool menuOpen = false;
@@ -232,6 +255,9 @@ void Menu::updater()
             layout_called = false;
             selectionDirty = true;
             pollSecs = 15;
+            firstScan = true;
+            scanAttempts = 0;
+            scanning.store(false);
         }
 
         // reset selection scope (locks internally)
