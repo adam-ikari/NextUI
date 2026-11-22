@@ -76,15 +76,6 @@ before() {
 
 after() {
 	>&2 echo "Resumed from suspend."
-
-	# If the RTC alarm fired after a day in suspend, power off instead of
-	# resuming. Game state was saved by Menu_beforeSleep() before suspend.
-	if rtc_alarm_fired; then
-		>&2 echo "RTC alarm fired after 24h suspend - powering off."
-		sync
-		poweroff_next 2>/dev/null || poweroff
-		exit 0
-	fi
 	clear_rtc_alarm
 
 	# Run post-resume hooks in background immediately after wake.
@@ -141,6 +132,17 @@ for i in $(seq 1 $sleep_max_tries); do
 	>&2 echo "Deep sleep failed: retrying in 3 seconds"
 	sleep 3
 done
+
+# If the RTC alarm fired after a day in suspend, power off synchronously before
+# returning to the app. The app would otherwise re-enable the backlight and
+# resume games on wake; doing it here keeps the screen dark. Game state was
+# already saved by Menu_beforeSleep() before suspend.
+if rtc_alarm_fired; then
+	>&2 echo "RTC alarm fired after 24h suspend - powering off without waking UI."
+	sync
+	poweroff_next 2>/dev/null || poweroff
+	exit 0
+fi
 
 # Resume services in background to reduce UI latency
 after &
