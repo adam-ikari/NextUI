@@ -137,6 +137,8 @@ static const LangEntry lang_entries[LANG_COUNT] = {
     LANG_E(LANG_SLEEP, "Sleep", "休眠"),
     LANG_E(LANG_SPEAKER_VOLUME, "Speaker volume", "扬声器音量"),
     LANG_E(LANG_SPEAKER_VOLUME_0_20, "Speaker volume (0-20)", "扬声器音量(0-20)"),
+    LANG_E(LANG_SSH_SERVER, "SSH Server", "SSH 服务器"),
+    LANG_E(LANG_SSH_SERVER_DESC, "Enable the SSH server for remote access (reboot to apply)", "开启 SSH 服务器以进行远程访问（重启生效）"),
     LANG_E(LANG_STATUS, "Status", "状态"),
     LANG_E(LANG_STOCK_OS_VERSION, "Stock OS version", "原厂系统版本"),
     LANG_E(LANG_STYLE_OF_ANIMATED_TRANSITION_WHEN_NAVIGATING_MENUS, "Style of animated transition when navigating menus", "菜单导航时的动画过渡风格"),

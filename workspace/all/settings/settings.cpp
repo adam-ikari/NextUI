@@ -746,6 +746,16 @@ int main(int argc, char *argv[])
             );
         }
 
+        if(deviceInfo.getPlatform() == DeviceInfo::tg5040 || deviceInfo.getPlatform() == DeviceInfo::tg5050)
+        {
+            systemItems.push_back(
+                new MenuItem{ListItemType::Generic, LANG(SSH_SERVER), LANG(SSH_SERVER_DESC), {false, true}, on_off,
+                []() -> std::any { return CFG_getSshEnabled(); },
+                [](const std::any &value) { CFG_setSshEnabled(std::any_cast<bool>(value)); },
+                []() { CFG_setSshEnabled(CFG_DEFAULT_SSH_ENABLED); }}
+            );
+        }
+
         if(deviceInfo.hasActiveCooling())
         {
             systemItems.push_back(

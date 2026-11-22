@@ -139,6 +139,18 @@ if [ "$bluetoothon" -eq 1 ]; then
 fi
 echo after bluetooth `cat /proc/uptime` >> /tmp/nextui_boottime
 
+# SSH server (NextUI setting, applied via stock sshd)
+sshon=$(nextval.elf ssh_enabled | sed -n 's/.*"ssh_enabled": \([0-9]*\).*/\1/p')
+if [ -x /usr/sbin/sshd ] && [ -x /usr/trimui/bin/systemval ]; then
+	if [ "$sshon" -eq 1 ]; then
+		/usr/trimui/bin/systemval enablessh 1 > /dev/null 2>&1
+		pidof sshd > /dev/null 2>&1 || /usr/sbin/sshd > /dev/null 2>&1 &
+	else
+		/usr/trimui/bin/systemval enablessh 0 > /dev/null 2>&1
+		killall -9 sshd > /dev/null 2>&1
+	fi
+fi
+
 #######################################
 
 AUTO_PATH=$USERDATA_PATH/auto.sh

@@ -73,6 +73,7 @@ void CFG_defaults(NextUISettings *cfg)
         .suspendTimeoutSecs = CFG_DEFAULT_SUSPENDTIMEOUTSECS,
         .powerOffProtection = CFG_DEFAULT_POWEROFFPROTECTION,
         .keepAwakeWhenUSB = CFG_DEFAULT_KEEPAWAKEWHENUSB,
+        .sshEnabled = CFG_DEFAULT_SSH_ENABLED,
 
         .haptics = CFG_DEFAULT_HAPTICS,
         .romsUseFolderBackground = CFG_DEFAULT_ROMSUSEFOLDERBACKGROUND,
@@ -319,6 +320,11 @@ void CFG_init(FontLoad_callback_t cb, ColorSet_callback_t ccb)
             if (sscanf(line, "keepAwakeWhenUSB=%i", &temp_value) == 1)
             {
                 CFG_setKeepAwakeWhenUSB((bool)temp_value);
+                continue;
+            }
+            if (sscanf(line, "ssh_enabled=%i", &temp_value) == 1)
+            {
+                CFG_setSshEnabled((bool)temp_value);
                 continue;
             }
             if (sscanf(line, "switcherscale=%i", &temp_value) == 1)
@@ -761,6 +767,17 @@ bool CFG_getKeepAwakeWhenUSB(void)
 void CFG_setKeepAwakeWhenUSB(bool enable)
 {
     settings.keepAwakeWhenUSB = enable;
+    CFG_sync();
+}
+
+bool CFG_getSshEnabled(void)
+{
+    return settings.sshEnabled;
+}
+
+void CFG_setSshEnabled(bool enable)
+{
+    settings.sshEnabled = enable;
     CFG_sync();
 }
 
@@ -1478,6 +1495,10 @@ void CFG_get(const char *key, char *value)
     {
         sprintf(value, "%i", CFG_getKeepAwakeWhenUSB());
     }
+    else if (strcmp(key, "ssh_enabled") == 0)
+    {
+        sprintf(value, "%i", CFG_getSshEnabled());
+    }
     else if (strcmp(key, "switcherscale") == 0)
     {
         sprintf(value, "%i", CFG_getGameSwitcherScaling());
@@ -1697,6 +1718,7 @@ void CFG_sync(void)
     fprintf(file, "suspendTimeout=%i\n", settings.suspendTimeoutSecs);
     fprintf(file, "powerOffProtection=%i\n", settings.powerOffProtection);
     fprintf(file, "keepAwakeWhenUSB=%i\n", settings.keepAwakeWhenUSB);
+    fprintf(file, "ssh_enabled=%i\n", settings.sshEnabled);
     fprintf(file, "switcherscale=%i\n", settings.gameSwitcherScaling);
     fprintf(file, "haptics=%i\n", settings.haptics);
     fprintf(file, "romfolderbg=%i\n", settings.romsUseFolderBackground);

@@ -155,6 +155,7 @@ typedef struct
 	uint32_t suspendTimeoutSecs;
 	bool powerOffProtection;
 	bool keepAwakeWhenUSB;
+	bool sshEnabled;
 
 	// Emulator
 	int saveFormat;
@@ -233,6 +234,7 @@ typedef struct
 #define CFG_DEFAULT_SUSPENDTIMEOUTSECS 120
 #define CFG_DEFAULT_POWEROFFPROTECTION true
 #define CFG_DEFAULT_KEEPAWAKEWHENUSB false
+#define CFG_DEFAULT_SSH_ENABLED false
 #define CFG_DEFAULT_HAPTICS false
 #define CFG_DEFAULT_ROMSUSEFOLDERBACKGROUND true
 #define CFG_DEFAULT_SAVEFORMAT SAVE_FORMAT_SAV
@@ -336,6 +338,9 @@ void CFG_setPowerOffProtection(bool enable);
 // Keep the device awake while it is connected to a host as a USB device.
 bool CFG_getKeepAwakeWhenUSB(void);
 void CFG_setKeepAwakeWhenUSB(bool enable);
+// Enable/disable the stock SSH server (tg5040/tg5050).
+bool CFG_getSshEnabled(void);
+void CFG_setSshEnabled(bool enable);
 // Show/hide clock in the status pill.
 bool CFG_getShowClock(void);
 void CFG_setShowClock(bool show);
