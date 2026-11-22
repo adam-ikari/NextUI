@@ -77,6 +77,8 @@ static const LangEntry lang_entries[LANG_COUNT] = {
     LANG_E(LANG_INPUT_PROMPT_STYLE, "Input prompt style", "按键提示风格"),
     LANG_E(LANG_JOYSTICK, "Joystick", "摇杆"),
     LANG_E(LANG_KEEP_AWAKE_OVER_USB, "Keep awake over USB", "USB 连接时保持唤醒"),
+    LANG_E(LANG_LED_CONTROL, "LED Control", "LED 控制"),
+    LANG_E(LANG_LED_CONTROL_DESC, "Configure RGB light effects and colors", "配置 RGB 灯效与颜色"),
     LANG_E(LANG_L_R, "L/R", "L/R"),
     LANG_E(LANG_LEFT, "Left", "左"),
     LANG_E(LANG_LOAD_STATES, "Load states", "读取存档"),

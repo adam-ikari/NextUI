@@ -756,6 +756,19 @@ int main(int argc, char *argv[])
             );
         }
 
+        if(deviceInfo.getPlatform() == DeviceInfo::tg5040)
+        {
+            systemItems.push_back(
+                new MenuItem{ListItemType::Button, LANG(LED_CONTROL), LANG(LED_CONTROL_DESC),
+                [](AbstractMenuItem &item) -> InputReactionHint {
+                    std::ofstream request(SHARED_USERDATA_PATH "/.minui/settings_launch");
+                    if (request) request << "ledcontrol" << std::endl;
+                    appQuit = true;
+                    return InputReactionHint::NoOp;
+                }}
+            );
+        }
+
         if(deviceInfo.hasActiveCooling())
         {
             systemItems.push_back(
