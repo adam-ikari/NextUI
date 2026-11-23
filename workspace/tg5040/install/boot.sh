@@ -70,6 +70,8 @@ for pakz in $PAKZ_PATH; do
 	cd $(dirname "$0")/$PLATFORM
 
 	./unzip -o -d "$SDCARD_PATH" "$pakz" # >> $pakz.txt
+	unzip_status=$?
+	[ "$unzip_status" = "0" ] || exit "$unzip_status"
 	rm -f "$pakz"
 
 	# run postinstall if present
@@ -95,6 +97,8 @@ if [ -f "$UPDATE_PATH" ]; then
 	rm -rf $SYSTEM_PATH/$PLATFORM/paks/MinUI.pak
 
 	./unzip -o "$UPDATE_PATH" -d "$SDCARD_PATH" # &> /mnt/SDCARD/unzip.txt
+	unzip_status=$?
+	[ "$unzip_status" = "0" ] || exit "$unzip_status"
 	rm -f "$UPDATE_PATH"
 
 	# the updated system finishes the install/update

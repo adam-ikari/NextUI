@@ -135,6 +135,8 @@ killall -9 show2.elf > /dev/null 2>&1 || true
 
 EXEC_PATH="/tmp/nextui_exec"
 NEXT_PATH="/tmp/next"
+# Drop a queued command left over from a crash so it isn't eval'd on this boot.
+rm -f "$NEXT_PATH"
 touch "$EXEC_PATH" && sync
 while [ -f "$EXEC_PATH" ]; do
 	echo "launch: starting nextui.elf $(date)" >> "$LAUNCH_LOG"
