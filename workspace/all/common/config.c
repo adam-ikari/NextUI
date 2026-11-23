@@ -1679,7 +1679,11 @@ void CFG_sync(void)
     }
 
     snprintf(settingsPath, sizeof(settingsPath), "%s/minuisettings.txt", shared_userdata);
-    FILE *file = fopen(settingsPath, "w");
+    // Write to a temp file then rename, so a power loss or kill during the
+    // write can't leave minuisettings.txt truncated or half-written.
+    char tmpPath[MAX_PATH];
+    snprintf(tmpPath, sizeof(tmpPath), "%s.tmp", settingsPath);
+    FILE *file = fopen(tmpPath, "w");
     if (file == NULL)
     {
         printf("[CFG] Unable to open settings file, cant write\n");
@@ -1761,7 +1765,11 @@ void CFG_sync(void)
     fprintf(file, "gameSwitcherCurtain=%i\n", settings.gameSwitcherCurtain);
     fprintf(file, "inputPromptStyle=%i\n", settings.inputPromptStyle);
 
+    fflush(file);
+    fsync(fileno(file));
     fclose(file);
+    if (rename(tmpPath, settingsPath) != 0)
+        printf("[CFG] Unable to replace settings file\n");
 }
 
 void CFG_print(void)

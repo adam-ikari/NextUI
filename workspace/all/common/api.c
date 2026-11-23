@@ -1102,10 +1102,15 @@ int GFX_wrapText(TTF_Font *font, char *str, int max_width, int max_lines)
 				max_line_width = line_width;
 			tmp[0] = ' ';
 			tmp += 1;
-			prev[0] = '\n';
-			prev += 1;
-			line = prev;
-			lines += 1;
+			// prev is NULL when the first word alone exceeds max_width.
+			// There is no earlier space to break at, so keep scanning.
+			if (prev)
+			{
+				prev[0] = '\n';
+				prev += 1;
+				line = prev;
+				lines += 1;
+			}
 		}
 		else
 		{ // continue
