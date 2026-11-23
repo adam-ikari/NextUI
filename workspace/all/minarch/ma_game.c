@@ -95,6 +95,7 @@ void Game_open(char* path) {
 		game.data = malloc(game.size);
 		if (game.data==NULL) {
 			LOG_error("Couldn't allocate memory for file: %s\n", path);
+			fclose(file);
 			return;
 		}
 

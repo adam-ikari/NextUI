@@ -1481,11 +1481,11 @@ void CFG_get(const char *key, char *value)
     }
     else if (strcmp(key, "screentimeout") == 0)
     {
-        sprintf(value, "%i", CFG_getScreenTimeoutSecs());
+        sprintf(value, "%u", CFG_getScreenTimeoutSecs());
     }
     else if (strcmp(key, "suspendTimeout") == 0)
     {
-        sprintf(value, "%i", CFG_getSuspendTimeoutSecs());
+        sprintf(value, "%u", CFG_getSuspendTimeoutSecs());
     }
     else if (strcmp(key, "powerOffProtection") == 0)
     {
@@ -1718,8 +1718,8 @@ void CFG_sync(void)
 	fprintf(file, "collections=%i\n", settings.showCollections);
     fprintf(file, "gameart=%i\n", settings.showGameArt);
     fprintf(file, "showfoldernamesatroot=%i\n", settings.showFolderNamesAtRoot);
-    fprintf(file, "screentimeout=%i\n", settings.screenTimeoutSecs);
-    fprintf(file, "suspendTimeout=%i\n", settings.suspendTimeoutSecs);
+    fprintf(file, "screentimeout=%u\n", settings.screenTimeoutSecs);
+    fprintf(file, "suspendTimeout=%u\n", settings.suspendTimeoutSecs);
     fprintf(file, "powerOffProtection=%i\n", settings.powerOffProtection);
     fprintf(file, "keepAwakeWhenUSB=%i\n", settings.keepAwakeWhenUSB);
     fprintf(file, "ssh_enabled=%i\n", settings.sshEnabled);
@@ -1799,8 +1799,8 @@ void CFG_print(void)
 	printf("\t\"collections\": %i,\n", settings.showCollections);
     printf("\t\"gameart\": %i,\n", settings.showGameArt);
     printf("\t\"showfoldernamesatroot\": %i,\n", settings.showFolderNamesAtRoot);
-    printf("\t\"screentimeout\": %i,\n", settings.screenTimeoutSecs);
-    printf("\t\"suspendTimeout\": %i,\n", settings.suspendTimeoutSecs);
+    printf("\t\"screentimeout\": %u,\n", settings.screenTimeoutSecs);
+    printf("\t\"suspendTimeout\": %u,\n", settings.suspendTimeoutSecs);
     printf("\t\"powerOffProtection\": %i,\n", settings.powerOffProtection);
     printf("\t\"keepAwakeWhenUSB\": %i,\n", settings.keepAwakeWhenUSB);
     printf("\t\"switcherscale\": %i,\n", settings.gameSwitcherScaling);
