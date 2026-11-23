@@ -16,7 +16,7 @@ namespace Wifi
         MenuItem *diagItem;
 
         std::thread worker;
-        bool quit = false;
+        std::atomic<bool> quit{false};
         bool selectionDirty = false;
         bool firstScan = true;
         std::atomic<bool> scanning{false};

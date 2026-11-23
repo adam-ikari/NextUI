@@ -20,7 +20,7 @@ namespace Bluetooth
         MenuItem *rateItem = nullptr;
         
         std::thread worker;
-        bool quit = false;
+        std::atomic<bool> quit{false};
         bool selectionDirty = false;
         bool firstScan = true;
         int scanAttempts = 0;

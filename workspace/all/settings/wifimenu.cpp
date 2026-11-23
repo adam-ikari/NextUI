@@ -109,7 +109,9 @@ void Menu::updater()
 {
     int pollSecs = 15;
 
-    while (!quit && !globalQuit)
+    // Only read the atomic quit flag here: globalQuit is owned by the main
+    // thread, which always destroys this Menu (setting quit) before exiting.
+    while (!quit)
     {
         // TODO: pause when menu is not rendered
         if (WIFI_enabled())
