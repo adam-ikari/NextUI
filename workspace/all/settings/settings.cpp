@@ -32,7 +32,6 @@ extern "C"
 #define BUSYBOX_STOCK_VERSION "1.27.2"
 
 static int appQuit = false;
-static bool appSuspend = false;
 
 static void sigHandler(int sig)
 {
@@ -41,12 +40,6 @@ static void sigHandler(int sig)
     case SIGINT:
     case SIGTERM:
         appQuit = true;
-        break;
-    case SIGSTOP:
-        appSuspend = true;
-        break;
-    case SIGCONT:
-        appSuspend = false;
         break;
     default:
         break;
@@ -479,11 +472,13 @@ int main(int argc, char *argv[])
             return [id, defaultColor]() { CFG_setColor(id, defaultColor); CFG_clearPalette(); };
         };
 
-        // Pre-create one RGBA picker per color setting (reused across opens)
-        std::vector<std::unique_ptr<ColorPickerMenu>> pickers;
+        // Pre-create one RGBA picker per color setting (reused across opens).
+        // Ownership passes to the MenuItem below (as its submenu), which deletes
+        // it via ~AbstractMenuItem; keep raw pointers here to avoid double-free.
+        std::vector<ColorPickerMenu*> pickers;
         pickers.reserve(std::size(g_colorDefs));
         for (const auto &def : g_colorDefs)
-            pickers.push_back(std::make_unique<ColorPickerMenu>(
+            pickers.push_back(new ColorPickerMenu(
                 CFG_getColor(def.id), makeColorSetter(def.id), buildColorPresets(def.id), LANG_get(def.name)));
 
         // Build color MenuItems (loop order = g_colorDefs order = display order)
@@ -492,7 +487,7 @@ int main(int argc, char *argv[])
         for (int i = 0; i < (int)std::size(g_colorDefs); i++)
         {
             const auto &def = g_colorDefs[i];
-            ColorPickerMenu *picker = pickers[i].get();
+            ColorPickerMenu *picker = pickers[i];
             colorMenuItems.push_back(new MenuItem{
                 ListItemType::Color, LANG_get(def.name), LANG_get(def.desc), colors, color_strings,
                 makeColorGetter(def.id),
@@ -1213,10 +1208,10 @@ int main(int argc, char *argv[])
         mainItems.push_back(new MenuItem{ListItemType::Generic, LANG(IN_GAME), LANG(IN_GAME_SETTINGS_FOR_MINARCH), {}, {}, nullptr, nullptr, DeferToSubmenu, minarchMenu});
 
         if(deviceInfo.hasWifi())
-            mainItems.push_back(new MenuItem{ListItemType::Generic, LANG(NETWORK), "", {}, {}, nullptr, nullptr, DeferToSubmenu, new Wifi::Menu(appQuit, ctx.dirty)});
+            mainItems.push_back(new MenuItem{ListItemType::Generic, LANG(NETWORK), "", {}, {}, nullptr, nullptr, DeferToSubmenu, new Wifi::Menu()});
 
         if(deviceInfo.hasBluetooth())
-            mainItems.push_back(new MenuItem{ListItemType::Generic, LANG(BLUETOOTH), "", {}, {}, nullptr, nullptr, DeferToSubmenu, new Bluetooth::Menu(appQuit, ctx.dirty)});
+            mainItems.push_back(new MenuItem{ListItemType::Generic, LANG(BLUETOOTH), "", {}, {}, nullptr, nullptr, DeferToSubmenu, new Bluetooth::Menu()});
 
         mainItems.push_back(new MenuItem{ListItemType::Generic, LANG(ABOUT), "", {}, {}, nullptr, nullptr, DeferToSubmenu, aboutMenu});
 
@@ -1286,7 +1281,7 @@ int main(int argc, char *argv[])
                 if (ctx.appManagesTitle)
                 {
                     char display_name[256];
-                    int text_width = GFX_truncateText(font.large, LANG(SOME_TITLE), display_name, max_width, SCALE1(BUTTON_PADDING * 2));
+                    int text_width = GFX_truncateText(font.large, LANG(SOME_TITLE), display_name, sizeof(display_name), max_width, SCALE1(BUTTON_PADDING * 2));
                     max_width = MIN(max_width, text_width);
 
                     SDL_Surface *text;
@@ -1330,12 +1325,11 @@ int main(int argc, char *argv[])
                 appQuit = true;
         }
 
+        // MenuList owns its items, and items own their submenus, so this
+        // recursively releases the whole tree (appearance/system menus,
+        // color pickers, network option menus, etc.).
         delete ctx.menu;
-        delete appearanceMenu;
-        delete systemMenu;
         ctx.menu = NULL;
-
-        // Color pickers are owned by unique_ptrs above; destroyed automatically here.
 
         QuitSettings();
         PWR_quit();

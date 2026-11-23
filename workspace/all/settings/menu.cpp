@@ -387,11 +387,12 @@ bool MenuList::selectPrev()
 
 std::string MenuList::getSelectedItemName() const
 {
-    if(items.empty())
+    // scope.selected is an index into items (see handleInput/draw), while
+    // scope.start is the scroll offset. Guard both against a stale scope after
+    // the list shrank, otherwise at() throws and terminates the app.
+    if (scope.selected < 0 || scope.selected >= (int)items.size())
         return "";
-
-    int selected_row = scope.selected - scope.start;
-    return items.at(selected_row)->getName();
+    return items[scope.selected]->getName();
 }
 
 bool MenuList::selectByName(const std::string &name)
@@ -442,7 +443,9 @@ InputReactionHint MenuList::handleInput(int &dirty, int &quit)
     }
 
     ReadLock r(itemLock);
-    InputReactionHint handled = items.at(scope.selected)->handleInput(dirty);
+    if (items.empty() || scope.selected < 0 || scope.selected >= (int)items.size())
+        return Unhandled;
+    InputReactionHint handled = items[scope.selected]->handleInput(dirty);
     if(handled == ResetAllItems) {
         resetAllItems();
         dirty = 1;
@@ -873,7 +876,7 @@ void MenuList::drawMainItem(SDL_Surface *surface, const SDL_Rect &dst, const Abs
     const bool unique = false;
 
     char truncated[256];
-    int text_width = GFX_truncateText(font.large, item.getName().c_str(), truncated, dst.w, SCALE1(BUTTON_PADDING * 2));
+    int text_width = GFX_truncateText(font.large, item.getName().c_str(), truncated, sizeof(truncated), dst.w, SCALE1(BUTTON_PADDING * 2));
     int max_width = std::min(dst.w, text_width);
 
     if (selected)

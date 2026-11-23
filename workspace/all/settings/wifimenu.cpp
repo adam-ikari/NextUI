@@ -13,7 +13,7 @@ typedef std::shared_lock<Lock> ReadLock;
 using namespace Wifi;
 using namespace std::placeholders;
 
-Menu::Menu(const int &globalQuit, int &globalDirty) : MenuList(MenuItemType::Fixed, "Network", {}), globalQuit(globalQuit), globalDirty(globalDirty)
+Menu::Menu() : MenuList(MenuItemType::Fixed, "Network", {})
 {
     toggleItem = new MenuItem(ListItemType::Generic, "WiFi", "Enable/disable WiFi", {false, true}, {"Off", "On"},
                               std::bind(&Menu::getWifToggleState, this),
@@ -109,8 +109,7 @@ void Menu::updater()
 {
     int pollSecs = 15;
 
-    // Only read the atomic quit flag here: globalQuit is owned by the main
-    // thread, which always destroys this Menu (setting quit) before exiting.
+    // The owning MenuList destroys this Menu (setting quit) before exit.
     while (!quit)
     {
         // TODO: pause when menu is not rendered
@@ -161,11 +160,15 @@ void Menu::updater()
             {
                 // remember selection and restore
                 std::string selectedName;
-                bool selectionApplied = false;
 
                 {
                     WriteLock w(itemLock);
                     selectedName = getSelectedItemName();
+                    // toggleItem/diagItem are reused; delete only the dynamic
+                    // network items (and, via ~MenuItem, their option submenus).
+                    for (auto *old : items)
+                        if (old != toggleItem && old != diagItem)
+                            delete old;
                     items.clear();
                     items.push_back(toggleItem);
                     items.push_back(diagItem);
@@ -202,17 +205,19 @@ void Menu::updater()
                 }
                 MenuList::performLayout((SDL_Rect){0, 0, FIXED_WIDTH, FIXED_HEIGHT});
 
-                // Attempt to restore prev selection
-                selectionApplied = selectByName(selectedName);
-                globalDirty |= selectionApplied;
-                // If selection was restored, we already called performLayout internally
-                selectionDirty |= !selectionApplied;
+                // Attempt to restore prev selection. Either way the list changed,
+                // so ask the main thread to repaint via the dirty flag.
+                selectByName(selectedName);
+                selectionDirty = true;
             }
             pollSecs = 2;
         }
         else
         {
             WriteLock w(itemLock);
+            for (auto *old : items)
+                if (old != toggleItem && old != diagItem)
+                    delete old;
             items.clear();
             items.push_back(toggleItem);
             items.push_back(diagItem);

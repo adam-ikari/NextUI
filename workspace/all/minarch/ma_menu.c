@@ -1966,7 +1966,7 @@ void Menu_loop(void) {
 			int max_width = screen->w - SCALE1(PADDING * 2) - ow;
 			
 			char display_name[256];
-			int text_width = GFX_truncateText(font.large, rom_name, display_name, max_width, SCALE1(BUTTON_PADDING*2));
+			int text_width = GFX_truncateText(font.large, rom_name, display_name, sizeof(display_name), max_width, SCALE1(BUTTON_PADDING*2));
 			max_width = MIN(max_width, text_width);
 
 			SDL_Surface* text;

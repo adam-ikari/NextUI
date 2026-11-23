@@ -169,8 +169,10 @@ public:
                      MenuList *submenu = nullptr)
         : type(type), name(name), desc(desc), on_get(on_get), on_set(on_set), 
         on_reset(on_reset), on_confirm(on_confirm), submenu(submenu) {}
-    ~AbstractMenuItem() {
-         // delete submenu;
+    virtual ~AbstractMenuItem() {
+        // Items own their submenu; MenuList::~MenuList deletes its items, which
+        // recursively releases the whole submenu tree.
+        delete submenu;
     }
 
     virtual const std::any getValue() const = 0;
@@ -324,7 +326,7 @@ protected:
 
 public:
     MenuList(MenuItemType type, const std::string &desc, std::vector<AbstractMenuItem*> items, MenuListCallback on_change = nullptr, MenuListCallback on_confirm = nullptr);
-    ~MenuList();
+    virtual ~MenuList();
     MenuList(MenuList &) = delete;
 
     static void showOverlay(const std::string& message, OverlayDismissMode dismissMode = OverlayDismissMode::None);

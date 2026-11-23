@@ -8,8 +8,6 @@ namespace Wifi
 {
     class Menu : public MenuList
     {
-        const int &globalQuit;
-        int &globalDirty;
         // wifi on/off
         MenuItem *toggleItem;
         // diagnostics on/off
@@ -23,7 +21,7 @@ namespace Wifi
         bool overlayShown = false;
 
     public:
-        Menu(const int &globalQuit, int &globalDirty);
+        Menu();
         ~Menu();
 
         InputReactionHint handleInput(int &dirty, int &quit) override;

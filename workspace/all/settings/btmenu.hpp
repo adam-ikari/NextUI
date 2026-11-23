@@ -10,8 +10,6 @@ namespace Bluetooth
 
     class Menu : public MenuList
     {
-        const int &globalQuit;
-        int &globalDirty;
         // bt on/off
         MenuItem *toggleItem;
         // diagnostics on/off
@@ -29,7 +27,7 @@ namespace Bluetooth
 
         PairingAgent* pairingAgent = nullptr;
     public:
-        Menu(const int &globalQuit, int &globalDirty);
+        Menu();
         ~Menu();
 
         InputReactionHint handleInput(int &dirty, int &quit) override;

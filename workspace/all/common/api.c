@@ -1016,16 +1016,22 @@ void GFX_delay(void)
 FALLBACK_IMPLEMENTATION int PLAT_supportsOverscan(void) { return 0; }
 FALLBACK_IMPLEMENTATION void PLAT_setEffectColor(int next_color) {}
 
-int GFX_truncateText(TTF_Font *font, const char *in_name, char *out_name, int max_width, int padding)
+int GFX_truncateText(TTF_Font *font, const char *in_name, char *out_name, int out_size, int max_width, int padding)
 {
 	int text_width;
-	strcpy(out_name, in_name);
+	if (out_size <= 0)
+		return 0;
+	// Bound the copy to the caller's buffer: source strings can be ROM paths up
+	// to MAX_PATH while most callers allocate a 256-byte output buffer.
+	snprintf(out_name, out_size, "%s", in_name);
 	TTF_SizeUTF8(font, out_name, &text_width, NULL);
 	text_width += padding;
 
 	while (text_width > max_width)
 	{
 		int len = strlen(out_name);
+		if (len <= 3)
+			break; // nothing left to truncate without writing before the buffer
 		strcpy(&out_name[len - 4], "...\0");
 		TTF_SizeUTF8(font, out_name, &text_width, NULL);
 		text_width += padding;
@@ -1065,7 +1071,7 @@ int GFX_wrapText(TTF_Font *font, char *str, int max_width, int max_lines)
 	TTF_SizeUTF8(font, line, &line_width, NULL);
 	if (line_width <= max_width)
 	{
-		line_width = GFX_truncateText(font, line, buffer, max_width, 0);
+		line_width = GFX_truncateText(font, line, buffer, sizeof(buffer), max_width, 0);
 		strcpy(line, buffer);
 		return line_width;
 	}
@@ -1121,7 +1127,7 @@ int GFX_wrapText(TTF_Font *font, char *str, int max_width, int max_lines)
 		i += 1;
 	}
 
-	line_width = GFX_truncateText(font, line, buffer, max_width, 0);
+	line_width = GFX_truncateText(font, line, buffer, sizeof(buffer), max_width, 0);
 	strcpy(line, buffer);
 
 	if (line_width > max_line_width)
@@ -2205,17 +2211,16 @@ void GFX_blitMessage(TTF_Font *font, char *msg, SDL_Surface *dst, SDL_Rect *dst_
 	{
 		int len;
 		if (i + 1 < row_count)
-		{
 			len = rows[i + 1] - rows[i] - 1;
-			if (len)
-				strncpy(line, rows[i], len);
-			line[len] = '\0';
-		}
 		else
-		{
 			len = strlen(rows[i]);
-			strcpy(line, rows[i]);
-		}
+		// Clamp to the local buffer: a single line can exceed 255 bytes
+		// (long SSID, achievement text, ROM name) and overflow the stack.
+		if (len > (int)sizeof(line) - 1)
+			len = sizeof(line) - 1;
+		if (len > 0)
+			memcpy(line, rows[i], len);
+		line[len] = '\0';
 
 		if (len)
 		{
@@ -2605,17 +2610,14 @@ void GFX_sizeText(TTF_Font *font, const char *str, int leading, int *w, int *h)
 	{
 		int len;
 		if (i + 1 < count)
-		{
 			len = lines[i + 1] - lines[i] - 1;
-			if (len)
-				strncpy(line, lines[i], len);
-			line[len] = '\0';
-		}
 		else
-		{
 			len = strlen(lines[i]);
-			strcpy(line, lines[i]);
-		}
+		if (len > (int)sizeof(line) - 1)
+			len = sizeof(line) - 1;
+		if (len > 0)
+			memcpy(line, lines[i], len);
+		line[len] = '\0';
 
 		if (len)
 		{
@@ -2652,17 +2654,14 @@ void GFX_blitText(TTF_Font *font, const char *str, int leading, SDL_Color color,
 	{
 		int len;
 		if (i + 1 < count)
-		{
 			len = lines[i + 1] - lines[i] - 1;
-			if (len)
-				strncpy(line, lines[i], len);
-			line[len] = '\0';
-		}
 		else
-		{
 			len = strlen(lines[i]);
-			strcpy(line, lines[i]);
-		}
+		if (len > (int)sizeof(line) - 1)
+			len = sizeof(line) - 1;
+		if (len > 0)
+			memcpy(line, lines[i], len);
+		line[len] = '\0';
 
 		if (len)
 		{
